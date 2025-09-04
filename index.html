@@ -466,101 +466,104 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>My Portfolio</h1>
-            <p class="subtitle">Welcome to my creative space</p>
-        </header>
+    <header>
+      <h1>My Portfolio</h1>
+      <p class="subtitle">Welcome to my creative space</p>
+    </header>
 
-        <nav class="nav">
-            <button class="nav-btn active" data-section="about">About</button>
-            <button class="nav-btn" data-section="hobbies">Hobbies</button>
-            <button class="nav-btn" data-section="portfolio">Portfolio</button>
-            <button class="nav-btn" data-section="contact">Contact</button>
-        </nav>
+    <nav class="nav">
+      <button class="nav-btn active" data-section="about">About</button>
+      <button class="nav-btn" data-section="hobbies">Hobbies</button>
+      <button class="nav-btn" data-section="portfolio">Portfolio</button>
+      <button class="nav-btn" data-section="contact">Contact</button>
+    </nav>
 
-        <section class="section active" id="about">
-            <h2>About Me</h2>
-            <div class="editable" id="about-content">
-                <p>Hello! I'm a passionate creator who loves to explore new technologies and express creativity through various mediums. This portfolio showcases my journey and the projects I'm most proud of.</p>
-                <p>I believe in continuous learning and pushing the boundaries of what's possible. Whether it's coding, design, or any other creative pursuit, I approach each project with enthusiasm and attention to detail.</p>
+         <!-- About -->
+    <section class="section active" id="about">
+      <h2>About Me</h2>
+      <div class="editable" id="about-content">
+        <p>Hello! I'm a passionate creator who loves to explore new technologies...</p>
+      </div>
+      <button class="edit-btn" onclick="toggleEdit('about-content')">Edit</button>
+    </section>
+
+       <!-- Hobbies -->
+    <section class="section" id="hobbies">
+      <h2>My Hobbies</h2>
+      <div class="editable" id="hobbies-content">
+        <p>Photography, coding, hiking, and digital art...</p>
+      </div>
+      <button class="edit-btn" onclick="toggleEdit('hobbies-content')">Edit</button>
+
+      <div class="carousel-container">
+        <div class="carousel" id="hobbies-carousel">
+          <div class="carousel-track" id="carousel-track">
+            <div class="carousel-slide">
+              <img src="data:image/svg+xml,..."
+                   alt="Upload first photo" class="carousel-image">
             </div>
-            <button class="edit-btn" onclick="toggleEdit('about-content')">Edit</button>
-        </section>
+          </div>
+        </div>
+        <div class="carousel-controls">
+          <button class="carousel-btn" onclick="previousSlide()">‹</button>
+          <button class="carousel-btn" onclick="nextSlide()">›</button>
+        </div>
+        <div class="upload-btn-container">
+          <input type="file" id="hobby-upload" multiple accept="image/*" style="display:none;">
+          <button class="upload-btn" onclick="document.getElementById('hobby-upload').click()">Upload Photos</button>
+        </div>
+      </div>
+    </section>
 
-        <section class="section" id="hobbies">
-            <h2>My Hobbies</h2>
-            <div class="editable" id="hobbies-content">
-                <p>Photography, coding, hiking, and digital art are some of my favorite ways to spend time. Each hobby brings its own unique perspective and helps me grow as a person and professional.</p>
-            </div>
-            <button class="edit-btn" onclick="toggleEdit('hobbies-content')">Edit</button>
-            
-            <div class="carousel-container">
-                <div class="carousel" id="hobbies-carousel">
-                    <div class="carousel-track" id="carousel-track">
-                        <div class="carousel-slide">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400' viewBox='0 0 800 400'%3E%3Crect width='800' height='400' fill='%23f0f0f0'/%3E%3Ctext x='400' y='200' text-anchor='middle' dy='0.3em' font-family='Arial' font-size='24' fill='%23999'%3EUpload your first photo%3C/text%3E%3C/svg%3E" alt="Upload first photo" class="carousel-image">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="carousel-controls">
-                    <button class="carousel-btn" onclick="previousSlide()">‹</button>
-                    <button class="carousel-btn" onclick="nextSlide()">›</button>
-                </div>
-                
-                <div class="upload-btn-container">
-                    <input type="file" id="hobby-upload" multiple accept="image/*" style="display: none;">
-                    <button class="upload-btn" onclick="document.getElementById('hobby-upload').click()">Upload Photos</button>
-                </div>
-            </div>
-        </section>
+      <!-- Portfolio -->
+    <section class="section" id="portfolio">
+      <h2>Portfolio Manager</h2>
+      <div class="folder-manager">
+        <div class="folder-controls" id="folder-controls">
+          <input type="text" id="folder-name" placeholder="Enter folder name">
+          <button class="btn" onclick="createFolder()">Create Folder</button>
+        </div>
+        <div class="folders-grid" id="folders-container"></div>
+        <div id="folder-header" style="display:none; gap:10px;">
+          <button class="btn" onclick="exitFolder()">⬅ Back</button>
+          <span id="current-folder-name" style="font-weight:bold;"></span>
+          <button class="btn btn-danger" onclick="deleteSelectedFolder()">Delete This Folder</button>
+        </div>
+        <div class="file-upload-area" id="upload-area">
+          <h3>Drop files here or click to upload</h3>
+          <input type="file" id="file-input" multiple style="display:none;">
+        </div>
+        <div class="files-grid" id="files-container"></div>
+        <div id="backup-controls" style="margin-top:10px; display:flex; gap:10px;">
+          <button id="export-data">Export Portfolio</button>
+          <input type="file" id="import-file" style="display:none;">
+          <button id="import-data">Import Portfolio</button>
+        </div>
+      </div>
+    </section>
 
-       <section class="section" id="portfolio">
-  <h2>Portfolio Manager</h2>
-
-  <div class="folder-manager">
-
-    <!-- Folder Controls -->
-    <div class="folder-controls" id="folder-controls" style="display:flex; gap:10px; margin-bottom:1rem;">
-      <input type="text" id="folder-name" placeholder="Enter folder name">
-      <button class="btn" onclick="createFolder()">Create Folder</button>
-    </div>
-
-    <!-- Folder Grid -->
-    <div class="folders-grid" id="folders-container"></div>
-
-    <!-- Inside Folder Header -->
-    <div id="folder-header" style="display:none; margin-bottom:1rem; align-items:center; gap:10px;">
-      <button class="btn" onclick="exitFolder()">⬅ Back</button>
-      <span id="current-folder-name" style="font-weight:bold;"></span>
-      <button class="btn btn-danger" onclick="deleteSelectedFolder()">Delete This Folder</button>
-    </div>
-
-    <!-- Upload Area -->
-    <div class="file-upload-area" id="upload-area">
-      <h3>Drop files here or click to upload</h3>
-      <p>Open a folder first, then drag & drop files or click to browse</p>
-      <input type="file" id="file-input" multiple style="display: none;">
-    </div>
-
-    <!-- Files Grid -->
-    <div class="files-grid" id="files-container"></div>
-
-    <!-- Backup Controls -->
-    <div id="backup-controls" style="margin-top:10px; display:flex; gap:10px;">
-      <button id="export-data" style="padding:6px 12px; border:none; background:#3498db; color:#fff; border-radius:5px; cursor:pointer;">
-        Export Portfolio
-      </button>
-      <input type="file" id="import-file" style="display:none;">
-      <button id="import-data" style="padding:6px 12px; border:none; background:#2ecc71; color:#fff; border-radius:5px; cursor:pointer;">
-        Import Portfolio
-      </button>
-    </div>
-
+         <!-- Contact -->
+    <section class="section" id="contact">
+      <h2>Contact Me</h2>
+      <div class="editable" id="contact-content">
+        <p>Email: your.email@example.com</p>
+      </div>
+      <button class="edit-btn" onclick="toggleEdit('contact-content')">Edit</button>
+    </section>
   </div>
-</section>
 
-    <script>
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+      <img class="lightbox-image" id="lightbox-image" src="" alt="">
+      <button class="lightbox-close" onclick="closeLightbox()">×</button>
+      <button class="lightbox-controls lightbox-prev" onclick="lightboxPrevious()">‹</button>
+      <button class="lightbox-controls lightbox-next" onclick="lightboxNext()">›</button>
+    </div>
+  </div>
+
+
+
   <script>
   // Global variables
   let folders = [];
@@ -573,15 +576,15 @@
 
   // Navigation functionality
   document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const section = btn.dataset.section;
-      showSection(section);
-
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      btn.addEventListener('click', () => {
+        const section = btn.dataset.section;
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(section).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
     });
-  });
-
+        
   function showSection(sectionId) {
     document.querySelectorAll('.section').forEach(section => {
       section.classList.remove('active');
@@ -1002,6 +1005,11 @@ document.getElementById("import-file").addEventListener("change", (e) => {
   };
   reader.readAsText(file);
 });
+         // ===== Storage Init =====
+    window.addEventListener("load", () => {
+      loadData();
+      updateCarousel();
+    });
 
     </script>
 </body>
