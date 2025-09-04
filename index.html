@@ -616,17 +616,6 @@
         document.getElementById('folder-name').value = '';
     }
 
-    function createFolder() {
-        const folderName = document.getElementById('folder-name').value.trim();
-        if (!folderName) return alert("Enter a folder name");
-        if (folders.includes(folderName)) return alert("Folder already exists");
-
-        folders.push(folderName);
-        folderFiles[folderName] = [];
-        updateFoldersDisplay();
-        document.getElementById('folder-name').value = '';
-    }
-
     function updateFoldersDisplay() {
         const container = document.getElementById('folders-container');
         container.innerHTML = '';
@@ -739,7 +728,6 @@
             container.appendChild(fileDiv);
         });
     }
-
     // File uploads
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
