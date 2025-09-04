@@ -684,13 +684,14 @@
       fileDiv.className = 'file-item';
 
       let preview = '';
-      if (file.data.startsWith("data:image")) {
-        // Always show as image if base64 begins with data:image
-        preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
-      } else {
-        // Non-image files show as an icon
-        preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
-      }
+if (file.data.startsWith("data:image")) {
+  // Always show as image if it's base64 data:image
+  preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
+} else {
+  // Default: show generic file icon
+  preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
+}
+
 
       fileDiv.innerHTML = `
         ${preview}
