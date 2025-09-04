@@ -570,49 +570,72 @@
     </div>
 
     <script>
-        // Global variables
-        let folders = [];
-        let selectedFolder = null;
-        let folderFiles = {};
-        let hobbyImages = [];
-        let currentCarouselIndex = 0;
-        let currentLightboxImages = [];
-        let currentLightboxIndex = 0;
+  // Global variables
+  let folders = [];
+  let selectedFolder = null;
+  let folderFiles = {};
+  let hobbyImages = [];
+  let currentCarouselIndex = 0;
+  let currentLightboxImages = [];
+  let currentLightboxIndex = 0;
 
-        // Navigation functionality
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const section = btn.dataset.section;
-                showSection(section);
-                
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
+  // ================================
+  // STORAGE FUNCTIONS
+  // ================================
+  function saveToStorage() {
+    localStorage.setItem("folders", JSON.stringify(folders));
+    localStorage.setItem("folderFiles", JSON.stringify(folderFiles));
+  }
 
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId).classList.add('active');
-        }
+  function loadFromStorage() {
+    const savedFolders = localStorage.getItem("folders");
+    const savedFiles = localStorage.getItem("folderFiles");
 
-        // Editable content functionality
-        function toggleEdit(elementId) {
-            const element = document.getElementById(elementId);
-            const isEditable = element.contentEditable === 'true';
-            
-            if (isEditable) {
-                element.contentEditable = 'false';
-                element.style.border = '2px dashed transparent';
-            } else {
-                element.contentEditable = 'true';
-                element.focus();
-            }
-        }
+    if (savedFolders && savedFiles) {
+      folders = JSON.parse(savedFolders);
+      folderFiles = JSON.parse(savedFiles);
+      updateFoldersDisplay();
+    }
+  }
 
-        // Folder management
-      function createFolder() {
+  // ================================
+  // NAVIGATION
+  // ================================
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const section = btn.dataset.section;
+      showSection(section);
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(section => {
+      section.classList.remove('active');
+    });
+    document.getElementById(sectionId).classList.add('active');
+  }
+
+  // ================================
+  // EDITABLE CONTENT
+  // ================================
+  function toggleEdit(elementId) {
+    const element = document.getElementById(elementId);
+    const isEditable = element.contentEditable === 'true';
+    if (isEditable) {
+      element.contentEditable = 'false';
+      element.style.border = '2px dashed transparent';
+    } else {
+      element.contentEditable = 'true';
+      element.focus();
+    }
+  }
+
+  // ================================
+  // FOLDER MANAGEMENT
+  // ================================
+  function createFolder() {
     const folderName = document.getElementById('folder-name').value.trim();
     if (!folderName) return alert("Enter a folder name");
     if (folders.includes(folderName)) return alert("Folder already exists");
@@ -621,6 +644,7 @@
     folderFiles[folderName] = [];
     updateFoldersDisplay();
     document.getElementById('folder-name').value = '';
+    saveToStorage();
   }
 
   function updateFoldersDisplay() {
@@ -655,6 +679,7 @@
     document.getElementById('folder-controls').style.display = "flex";
     document.getElementById('folder-header').style.display = "none";
     document.getElementById('files-container').innerHTML = "";
+    updateFoldersDisplay();
   }
 
   function deleteSelectedFolder() {
@@ -665,8 +690,12 @@
     delete folderFiles[selectedFolder];
     exitFolder();
     updateFoldersDisplay();
+    saveToStorage();
   }
 
+  // ================================
+  // FILES
+  // ================================
   function updateFilesDisplay() {
     const container = document.getElementById('files-container');
     container.innerHTML = '';
@@ -684,17 +713,11 @@
       fileDiv.className = 'file-item';
 
       let preview = '';
-if (file.data.startsWith("data:image")) {
-  // Show images
-  preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
-} else if (file.type === "text/html") {
-  // Show HTML files inside an iframe
-  preview = `<iframe src="${file.data}" class="file-preview" style="border:1px solid #ccc;"></iframe>`;
-} else {
-  // Default: file icon
-  preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
-}
-
+      if (file.data.startsWith("data:image")) {
+        preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
+      } else {
+        preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
+      }
 
       fileDiv.innerHTML = `
         ${preview}
@@ -702,31 +725,34 @@ if (file.data.startsWith("data:image")) {
         <small>${(file.size/1024).toFixed(1)} KB</small>
         <button class="delete-file">×</button>
       `;
-        
-        fileDiv.addEventListener('click', () => {
-  if (file.type.startsWith("image/")) {
-    // open image in lightbox
-    currentLightboxImages = folderFiles[selectedFolder].filter(f => f.type.startsWith("image/")).map(f => f.data);
-    currentLightboxIndex = currentLightboxImages.indexOf(file.data);
-    document.getElementById('lightbox').classList.add('active');
-    updateLightboxImage();
-  } else if (file.type === "text/html") {
-    // open html in new tab
-    const newWindow = window.open();
-    newWindow.document.open();
-    newWindow.document.write(atob(file.data.split(",")[1])); // decode base64 html
-    newWindow.document.close();
-  } else {
-    alert("Preview not available for this file type.");
-  }
-});
 
+      // click preview
+      fileDiv.addEventListener('click', (e) => {
+        if (e.target.classList.contains("delete-file")) return;
+        if (file.type.startsWith("image/")) {
+          currentLightboxImages = folderFiles[selectedFolder]
+            .filter(f => f.type.startsWith("image/"))
+            .map(f => f.data);
+          currentLightboxIndex = currentLightboxImages.indexOf(file.data);
+          document.getElementById('lightbox').classList.add('active');
+          updateLightboxImage();
+        } else if (file.type === "text/html") {
+          const newWindow = window.open();
+          newWindow.document.open();
+          newWindow.document.write(atob(file.data.split(",")[1]));
+          newWindow.document.close();
+        } else {
+          alert("Preview not available for this file type.");
+        }
+      });
 
+      // delete file
       fileDiv.querySelector('.delete-file').addEventListener('click', () => {
         if (confirm("Delete this file?")) {
           folderFiles[selectedFolder].splice(index, 1);
           updateFilesDisplay();
           updateFoldersDisplay();
+          saveToStorage();
         }
       });
 
@@ -734,7 +760,9 @@ if (file.data.startsWith("data:image")) {
     });
   }
 
-  // File Upload
+  // ================================
+  // FILE UPLOAD
+  // ================================
   const uploadArea = document.getElementById("upload-area");
   const fileInput = document.getElementById("file-input");
 
@@ -756,27 +784,56 @@ if (file.data.startsWith("data:image")) {
   });
 
   function handleFiles(files) {
-  [...files].forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      folderFiles[selectedFolder].push({
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        data: e.target.result
-      });
-      updateFilesDisplay();
-      updateFoldersDisplay();
-    };
+    [...files].forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        folderFiles[selectedFolder].push({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          data: e.target.result
+        });
+        updateFilesDisplay();
+        updateFoldersDisplay();
+        saveToStorage();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
-    if (file.type.startsWith("image/") || file.type === "text/html") {
-  reader.readAsDataURL(file);
-} else {
-  reader.readAsDataURL(file);
-}
+  // ================================
+  // LIGHTBOX
+  // ================================
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
 
+  document.getElementById("lightbox-close").addEventListener("click", () => {
+    lightbox.classList.remove("active");
   });
-}
+
+  document.getElementById("prev-img").addEventListener("click", () => {
+    if (currentLightboxImages.length > 0) {
+      currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
+      updateLightboxImage();
+    }
+  });
+
+  document.getElementById("next-img").addEventListener("click", () => {
+    if (currentLightboxImages.length > 0) {
+      currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
+      updateLightboxImage();
+    }
+  });
+
+  function updateLightboxImage() {
+    lightboxImg.src = currentLightboxImages[currentLightboxIndex];
+  }
+
+  // ================================
+  // INIT
+  // ================================
+  document.addEventListener("DOMContentLoaded", loadFromStorage);
+</script>
 
         
         // Hobbies carousel functionality
