@@ -702,6 +702,25 @@ if (file.data.startsWith("data:image")) {
         <small>${(file.size/1024).toFixed(1)} KB</small>
         <button class="delete-file">×</button>
       `;
+        
+        fileDiv.addEventListener('click', () => {
+  if (file.type.startsWith("image/")) {
+    // open image in lightbox
+    currentLightboxImages = folderFiles[selectedFolder].filter(f => f.type.startsWith("image/")).map(f => f.data);
+    currentLightboxIndex = currentLightboxImages.indexOf(file.data);
+    document.getElementById('lightbox').classList.add('active');
+    updateLightboxImage();
+  } else if (file.type === "text/html") {
+    // open html in new tab
+    const newWindow = window.open();
+    newWindow.document.open();
+    newWindow.document.write(atob(file.data.split(",")[1])); // decode base64 html
+    newWindow.document.close();
+  } else {
+    alert("Preview not available for this file type.");
+  }
+});
+
 
       fileDiv.querySelector('.delete-file').addEventListener('click', () => {
         if (confirm("Delete this file?")) {
@@ -750,13 +769,12 @@ if (file.data.startsWith("data:image")) {
       updateFoldersDisplay();
     };
 
-    if (file.type.startsWith("image/")) {
-      reader.readAsDataURL(file); // images → base64
-    } else if (file.type === "text/html") {
-      reader.readAsDataURL(file); // keep iframe-friendly
-    } else {
-      reader.readAsDataURL(file); // still base64, can expand later
-    }
+    if (file.type.startsWith("image/") || file.type === "text/html") {
+  reader.readAsDataURL(file);
+} else {
+  reader.readAsDataURL(file);
+}
+
   });
 }
 
