@@ -515,31 +515,38 @@
             </div>
         </section>
 
-        <section class="section" id="portfolio">
-            <h2>Portfolio Manager</h2>
-            
-            <div class="folder-manager">
-                <div class="folder-controls">
-                    <input type="text" id="folder-name" placeholder="Enter folder name">
-                    <button class="btn" onclick="createFolder()">Create Folder</button>
-                    <button class="btn btn-danger" onclick="deleteSelectedFolder()">Delete Selected</button>
-                </div>
-                
-                <div class="folders-grid" id="folders-container">
-                    <!-- Folders will be dynamically added here -->
-                </div>
-                
-                <div class="file-upload-area" id="upload-area">
-                    <h3>Drop files here or click to upload</h3>
-                    <p>Select a folder first, then drag & drop files or click to browse</p>
-                    <input type="file" id="file-input" multiple style="display: none;">
-                </div>
-                
-                <div class="files-grid" id="files-container">
-                    <!-- Files will be displayed here -->
-                </div>
-            </div>
-        </section>
+         <section class="section" id="portfolio">
+      <h2>Portfolio Manager</h2>
+
+      <div class="folder-manager">
+
+        <!-- Folder Controls -->
+        <div class="folder-controls" id="folder-controls" style="display:flex; gap:10px; margin-bottom:1rem;">
+          <input type="text" id="folder-name" placeholder="Enter folder name">
+          <button class="btn" onclick="createFolder()">Create Folder</button>
+        </div>
+
+        <!-- Folder Grid -->
+        <div class="folders-grid" id="folders-container"></div>
+
+        <!-- Inside Folder Header -->
+        <div id="folder-header" style="display:none; margin-bottom:1rem; align-items:center; gap:10px;">
+          <button class="btn" onclick="exitFolder()">⬅ Back</button>
+          <span id="current-folder-name" style="font-weight:bold;"></span>
+          <button class="btn btn-danger" onclick="deleteSelectedFolder()">Delete This Folder</button>
+        </div>
+
+        <!-- Upload Area -->
+        <div class="file-upload-area" id="upload-area">
+          <h3>Drop files here or click to upload</h3>
+          <p>Open a folder first, then drag & drop files or click to browse</p>
+          <input type="file" id="file-input" multiple style="display: none;">
+        </div>
+
+        <!-- Files Grid -->
+        <div class="files-grid" id="files-container"></div>
+      </div>
+    </section>
 
         <section class="section" id="contact">
             <h2>Contact Me</h2>
@@ -606,162 +613,138 @@
 
         // Folder management
         function createFolder() {
-        const folderName = document.getElementById('folder-name').value.trim();
-        if (!folderName) return alert("Enter a folder name");
-        if (folders.includes(folderName)) return alert("Folder already exists");
+      const folderName = document.getElementById('folder-name').value.trim();
+      if (!folderName) return alert("Enter a folder name");
+      if (folders.includes(folderName)) return alert("Folder already exists");
 
-        folders.push(folderName);
-        folderFiles[folderName] = [];
-        updateFoldersDisplay();
-        document.getElementById('folder-name').value = '';
+      folders.push(folderName);
+      folderFiles[folderName] = [];
+      updateFoldersDisplay();
+      document.getElementById('folder-name').value = '';
     }
 
     function updateFoldersDisplay() {
-        const container = document.getElementById('folders-container');
-        container.innerHTML = '';
+      const container = document.getElementById('folders-container');
+      container.innerHTML = '';
 
-        folders.forEach(folderName => {
-            const folderDiv = document.createElement('div');
-            folderDiv.className = 'folder';
-            folderDiv.innerHTML = `
-                <div class="folder-icon">📁</div>
-                <h4>${folderName}</h4>
-                <small>${folderFiles[folderName].length} files</small>
-            `;
-            folderDiv.addEventListener('click', () => openFolder(folderName));
-            container.appendChild(folderDiv);
-        });
+      folders.forEach(folderName => {
+        const folderDiv = document.createElement('div');
+        folderDiv.className = 'folder';
+        folderDiv.innerHTML = `
+          <div class="folder-icon">📁</div>
+          <h4>${folderName}</h4>
+          <small>${folderFiles[folderName].length} files</small>
+        `;
+        folderDiv.addEventListener('click', () => openFolder(folderName));
+        container.appendChild(folderDiv);
+      });
     }
 
     function openFolder(folderName) {
-        selectedFolder = folderName;
-
-        // Hide folder grid + create controls
-        document.getElementById('folders-container').style.display = "none";
-        document.getElementById('folder-controls').style.display = "none";
-
-        // Show header (Back + Delete)
-        document.getElementById('folder-header').style.display = "flex";
-        document.getElementById('current-folder-name').textContent = folderName;
-
-        updateFilesDisplay();
+      selectedFolder = folderName;
+      document.getElementById('folders-container').style.display = "none";
+      document.getElementById('folder-controls').style.display = "none";
+      document.getElementById('folder-header').style.display = "flex";
+      document.getElementById('current-folder-name').textContent = folderName;
+      updateFilesDisplay();
     }
 
     function exitFolder() {
-        selectedFolder = null;
-
-        // Show folder grid + controls
-        document.getElementById('folders-container').style.display = "grid";
-        document.getElementById('folder-controls').style.display = "flex";
-
-        // Hide folder header
-        document.getElementById('folder-header').style.display = "none";
-
-        // Clear files
-        document.getElementById('files-container').innerHTML = "";
+      selectedFolder = null;
+      document.getElementById('folders-container').style.display = "grid";
+      document.getElementById('folder-controls').style.display = "flex";
+      document.getElementById('folder-header').style.display = "none";
+      document.getElementById('files-container').innerHTML = "";
     }
 
     function deleteSelectedFolder() {
-        if (!selectedFolder) return alert("Open a folder first");
-        if (!confirm(`Delete folder "${selectedFolder}" and all its files?`)) return;
+      if (!selectedFolder) return alert("Open a folder first");
+      if (!confirm(`Delete folder "${selectedFolder}" and all its files?`)) return;
 
-        folders = folders.filter(f => f !== selectedFolder);
-        delete folderFiles[selectedFolder];
-        exitFolder();
-        updateFoldersDisplay();
+      folders = folders.filter(f => f !== selectedFolder);
+      delete folderFiles[selectedFolder];
+      exitFolder();
+      updateFoldersDisplay();
     }
 
     function updateFilesDisplay() {
-        const container = document.getElementById('files-container');
-        container.innerHTML = '';
+      const container = document.getElementById('files-container');
+      container.innerHTML = '';
 
-        if (!selectedFolder) return;
-        const files = folderFiles[selectedFolder];
+      if (!selectedFolder) return;
+      const files = folderFiles[selectedFolder];
 
-        if (files.length === 0) {
-            container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#666;">No files yet</p>`;
-            return;
+      if (files.length === 0) {
+        container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#666;">No files yet</p>`;
+        return;
+      }
+
+      files.forEach((file, index) => {
+        const fileDiv = document.createElement('div');
+        fileDiv.className = 'file-item';
+
+        let preview = '';
+        if (file.type.startsWith('image/')) {
+          preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
+        } else {
+          preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
         }
 
-        files.forEach((file, index) => {
-            const fileDiv = document.createElement('div');
-            fileDiv.className = 'file-item';
+        fileDiv.innerHTML = `
+          ${preview}
+          <h5>${file.name}</h5>
+          <small>${(file.size/1024).toFixed(1)} KB</small>
+          <button class="delete-file">×</button>
+        `;
 
-            let preview = '';
-            if (file.type.startsWith('image/')) {
-                preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
-            } else {
-                preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
-            }
-
-            fileDiv.innerHTML = `
-                ${preview}
-                <h5>${file.name}</h5>
-                <small>${(file.size/1024).toFixed(1)} KB</small>
-                <button class="delete-file">×</button>
-            `;
-
-            // Delete file
-            fileDiv.querySelector('.delete-file').addEventListener('click', () => {
-                if (confirm("Delete this file?")) {
-                    folderFiles[selectedFolder].splice(index, 1);
-                    updateFilesDisplay();
-                    updateFoldersDisplay();
-                }
-            });
-
-            container.appendChild(fileDiv);
+        fileDiv.querySelector('.delete-file').addEventListener('click', () => {
+          if (confirm("Delete this file?")) {
+            folderFiles[selectedFolder].splice(index, 1);
+            updateFilesDisplay();
+            updateFoldersDisplay();
+          }
         });
+
+        container.appendChild(fileDiv);
+      });
     }
-    // File uploads
-    const uploadArea = document.getElementById('upload-area');
-    const fileInput = document.getElementById('file-input');
 
-    uploadArea.addEventListener('click', () => {
-        if (!selectedFolder) return alert("Open a folder first");
-        fileInput.click();
+    // File Upload
+    const uploadArea = document.getElementById("upload-area");
+    const fileInput = document.getElementById("file-input");
+
+    uploadArea.addEventListener("click", () => fileInput.click());
+    uploadArea.addEventListener("dragover", e => {
+      e.preventDefault();
+      uploadArea.classList.add("dragover");
     });
-
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
+    uploadArea.addEventListener("dragleave", () => uploadArea.classList.remove("dragover"));
+    uploadArea.addEventListener("drop", e => {
+      e.preventDefault();
+      uploadArea.classList.remove("dragover");
+      if (!selectedFolder) return alert("Open a folder first");
+      handleFiles(e.dataTransfer.files);
     });
-
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        if (!selectedFolder) return alert("Open a folder first");
-        handleFiles(e.dataTransfer.files);
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        if (!selectedFolder) return alert("Open a folder first");
-        handleFiles(e.target.files);
+    fileInput.addEventListener("change", () => {
+      if (!selectedFolder) return alert("Open a folder first");
+      handleFiles(fileInput.files);
     });
 
     function handleFiles(files) {
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                folderFiles[selectedFolder].push({
-                    name: file.name,
-                    type: file.type,
-                    data: e.target.result,
-                    size: file.size
-                });
-                updateFilesDisplay();
-                updateFoldersDisplay();
-            };
-            if (file.type === "text/html") {
-                reader.readAsText(file);
-            } else {
-                reader.readAsDataURL(file);
-            }
-        });
+      [...files].forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          folderFiles[selectedFolder].push({
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            data: e.target.result
+          });
+          updateFilesDisplay();
+          updateFoldersDisplay();
+        };
+        reader.readAsDataURL(file);
+      });
     }
         
         // Hobbies carousel functionality
