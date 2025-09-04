@@ -242,6 +242,10 @@
             color: white;
         }
 
+        .project-item.hidden {
+            display: none;
+        }
+
         .project-icon {
             font-size: 2.5rem;
             margin-bottom: 15px;
@@ -686,7 +690,13 @@
                 // Hide loading indicator
                 loadingIndicator.style.display = 'none';
                 
-                if (files.length === 0) {
+                // Filter out index.html files
+                const filteredFiles = files.filter(file => {
+                    const fileName = file.name.toLowerCase();
+                    return fileName !== 'index.html';
+                });
+
+                if (filteredFiles.length === 0) {
                     showEmptyState();
                     return;
                 }
@@ -697,20 +707,20 @@
 
                 // Display success message
                 const pathDisplay = path ? `${path}/` : 'root';
-                successMessage.textContent = `✅ Successfully loaded ${files.length} items from ${pathDisplay}`;
+                successMessage.textContent = `✅ Successfully loaded ${filteredFiles.length} items from ${pathDisplay}`;
                 successMessage.style.display = 'block';
 
                 // Clear and populate project list
                 projectList.innerHTML = '';
                 
                 // Sort files: folders first, then files
-                files.sort((a, b) => {
+                filteredFiles.sort((a, b) => {
                     if (a.type === 'dir' && b.type !== 'dir') return -1;
                     if (a.type !== 'dir' && b.type === 'dir') return 1;
                     return a.name.localeCompare(b.name);
                 });
 
-                files.forEach(file => {
+                filteredFiles.forEach(file => {
                     const projectItem = document.createElement('div');
                     projectItem.className = `project-item ${file.type === 'dir' ? 'folder' : 'file'}`;
                     
@@ -746,8 +756,8 @@
                     // Show image in lightbox
                     showImageInLightbox(file.download_url);
                 } else if (isHtmlFile(file.name)) {
-                    // Try multiple approaches for HTML files
-                    openHtmlFile(file);
+                    // Open HTML file in new tab with improved rendering
+                    openHtmlFileInNewTab(file);
                 } else {
                     // For other files, open in GitHub
                     window.open(file.html_url, '_blank');
@@ -755,76 +765,22 @@
             }
         }
 
-        async function openHtmlFile(file) {
-            // Create loading window
-            const loadingWindow = window.open('', '_blank');
-            loadingWindow.document.write(`
-                <html>
-                    <head>
-                        <title>Loading ${file.name}...</title>
-                        <style>
-                            body { 
-                                font-family: 'Segoe UI', Arial, sans-serif; 
-                                text-align: center; 
-                                padding: 50px;
-                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                                color: white;
-                                margin: 0;
-                            }
-                            .loading-container {
-                                background: rgba(255, 255, 255, 0.1);
-                                backdrop-filter: blur(10px);
-                                padding: 40px;
-                                border-radius: 20px;
-                                max-width: 500px;
-                                margin: 0 auto;
-                            }
-                            .spinner {
-                                border: 4px solid rgba(255, 255, 255, 0.3);
-                                border-top: 4px solid white;
-                                border-radius: 50%;
-                                width: 40px;
-                                height: 40px;
-                                animation: spin 1s linear infinite;
-                                margin: 20px auto;
-                            }
-                            @keyframes spin {
-                                0% { transform: rotate(0deg); }
-                                100% { transform: rotate(360deg); }
-                            }
-                            .status {
-                                margin: 15px 0;
-                                font-size: 14px;
-                                opacity: 0.9;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="loading-container">
-                            <h2>🔄 Loading HTML File</h2>
-                            <div class="spinner"></div>
-                            <div class="status" id="status">Fetching content...</div>
-                        </div>
-                    </body>
-                </html>
-            `);
-
+        async function openHtmlFileInNewTab(file) {
             try {
-                // First, try to fetch the raw content
+                // Try to fetch the raw HTML content
                 const rawUrls = [
                     `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}`,
-                    `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/master/${file.path}`
+                    `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/master/${file.path}`,
+                    file.download_url
                 ];
 
                 let htmlContent = null;
-                let workingUrl = null;
 
                 for (const url of rawUrls) {
                     try {
                         const response = await fetch(url);
                         if (response.ok) {
                             htmlContent = await response.text();
-                            workingUrl = url;
                             break;
                         }
                     } catch (e) {
@@ -833,193 +789,68 @@
                 }
 
                 if (htmlContent) {
-                    // Update loading status
-                    const statusEl = loadingWindow.document.getElementById('status');
-                    if (statusEl) statusEl.textContent = 'Rendering HTML content...';
-
-                    // Process the HTML to fix relative paths
-                    const processedHtml = await processHtmlContent(htmlContent, file.path);
+                    // Create a new window and write the HTML content
+                    const newWindow = window.open('', '_blank');
                     
-                    // Replace the loading content with the actual HTML
-                    loadingWindow.document.open();
-                    loadingWindow.document.write(processedHtml);
-                    loadingWindow.document.close();
+                    // Process the HTML to fix relative paths
+                    const processedHtml = processHtmlForNewTab(htmlContent, file.path);
+                    
+                    newWindow.document.open();
+                    newWindow.document.write(processedHtml);
+                    newWindow.document.close();
+                    newWindow.document.title = file.name;
                 } else {
-                    throw new Error('Could not fetch HTML content');
+                    // Fallback: open raw GitHub URL
+                    window.open(`https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}`, '_blank');
                 }
 
             } catch (error) {
-                // Show helpful error page with setup instructions
-                loadingWindow.document.open();
-                loadingWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>HTML File - ${file.name}</title>
-                            <style>
-                                body { 
-                                    font-family: 'Segoe UI', Arial, sans-serif; 
-                                    max-width: 800px; 
-                                    margin: 0 auto; 
-                                    padding: 20px;
-                                    line-height: 1.6;
-                                    background: #f8f9fa;
-                                }
-                                .header {
-                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                                    color: white;
-                                    padding: 30px;
-                                    border-radius: 15px;
-                                    text-align: center;
-                                    margin-bottom: 30px;
-                                }
-                                .card { 
-                                    background: white; 
-                                    border: 1px solid #ddd; 
-                                    padding: 20px; 
-                                    border-radius: 10px; 
-                                    margin: 20px 0;
-                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                                }
-                                .error { 
-                                    background: #ffe6e6; 
-                                    border-color: #ff9999; 
-                                    color: #c0392b;
-                                }
-                                .solution { 
-                                    background: #e8f5e8; 
-                                    border-color: #4caf50; 
-                                    color: #2e7d2e;
-                                }
-                                .info {
-                                    background: #e3f2fd;
-                                    border-color: #2196f3;
-                                    color: #1565c0;
-                                }
-                                .btn {
-                                    display: inline-block;
-                                    padding: 12px 24px;
-                                    background: #667eea;
-                                    color: white;
-                                    text-decoration: none;
-                                    border-radius: 8px;
-                                    margin: 8px;
-                                    font-weight: 500;
-                                    transition: background 0.3s;
-                                }
-                                .btn:hover {
-                                    background: #5a6fd8;
-                                }
-                                .btn-secondary {
-                                    background: #6c757d;
-                                }
-                                .btn-secondary:hover {
-                                    background: #5a6268;
-                                }
-                                ol { padding-left: 20px; }
-                                li { margin: 8px 0; }
-                                .highlight {
-                                    background: #fff3cd;
-                                    border: 1px solid #ffc107;
-                                    padding: 15px;
-                                    border-radius: 8px;
-                                    margin: 15px 0;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div class="header">
-                                <h1>📄 ${file.name}</h1>
-                                <p>HTML File Viewer</p>
-                            </div>
-
-                            <div class="card error">
-                                <h3>⚠️ Cannot Display HTML File</h3>
-                                <p>The HTML file cannot be rendered directly due to browser security restrictions and missing GitHub Pages configuration.</p>
-                            </div>
-                            
-                            <div class="card solution">
-                                <h3>✅ Quick Solution - Enable GitHub Pages:</h3>
-                                <ol>
-                                    <li>Go to your repository: <strong>github.com/${currentUsername}/${currentRepo}</strong></li>
-                                    <li>Click the <strong>Settings</strong> tab</li>
-                                    <li>Scroll down to <strong>Pages</strong> section in the sidebar</li>
-                                    <li>Under "Source", select <strong>"Deploy from a branch"</strong></li>
-                                    <li>Choose <strong>"main"</strong> (or "master") branch</li>
-                                    <li>Click <strong>Save</strong></li>
-                                </ol>
-                                
-                                <div class="highlight">
-                                    <strong>📍 After setup, your HTML files will be live at:</strong><br>
-                                    <code>https://${currentUsername}.github.io/${currentRepo}/${file.path}</code>
-                                </div>
-                            </div>
-
-                            <div class="card info">
-                                <h3>🔍 View Options:</h3>
-                                <div style="text-align: center;">
-                                    <a href="${file.html_url}" target="_blank" class="btn">📁 View Code on GitHub</a>
-                                    <a href="${file.download_url}" target="_blank" class="btn">💾 Download File</a>
-                                    <a href="https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}" target="_blank" class="btn btn-secondary">📄 View Raw HTML</a>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <h3>💡 Pro Tip:</h3>
-                                <p>Once GitHub Pages is enabled, all HTML files in your repository will be accessible as live web pages. This is perfect for showcasing your projects!</p>
-                            </div>
-                        </body>
-                    </html>
-                `);
-                loadingWindow.document.close();
+                console.error('Error opening HTML file:', error);
+                // Final fallback: open on GitHub
+                window.open(file.html_url, '_blank');
             }
         }
 
-        async function processHtmlContent(htmlContent, filePath) {
-            // Get the base path for the file (directory containing the HTML file)
+        function processHtmlForNewTab(htmlContent, filePath) {
+            // Get the directory path for the HTML file
             const pathParts = filePath.split('/');
             pathParts.pop(); // Remove filename
-            const basePath = pathParts.join('/');
+            const dirPath = pathParts.join('/');
             
-            // Create a base URL for resolving relative paths
-            const baseUrl = `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${basePath}/`;
-            
-            // Add a base tag to help with relative paths and some basic styling
-            const processedHtml = htmlContent.replace(
-                /<head>/i,
-                `<head>
-                    <base href="${baseUrl}">
-                    <style>
-                        /* Portfolio viewer styles */
-                        body { 
-                            font-family: 'Segoe UI', Arial, sans-serif; 
-                            line-height: 1.6;
-                            margin: 20px;
-                            max-width: 1200px;
-                            margin: 0 auto;
-                            padding: 20px;
-                        }
-                        .portfolio-header {
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                            color: white;
-                            padding: 15px;
-                            border-radius: 10px;
-                            margin-bottom: 20px;
-                            text-align: center;
-                        }
-                    </style>`
+            // Create base URL for resolving relative paths
+            const baseUrl = dirPath 
+                ? `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${dirPath}/`
+                : `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/`;
+
+            // Process the HTML content
+            let processedHtml = htmlContent;
+
+            // Add base tag if not present
+            if (!processedHtml.includes('<base')) {
+                processedHtml = processedHtml.replace(
+                    /<head>/i,
+                    `<head>\n    <base href="${baseUrl}">`
+                );
+            }
+
+            // Fix relative paths in src and href attributes
+            processedHtml = processedHtml.replace(
+                /(src|href)=["'](?!https?:\/\/|data:|#)([^"']+)["']/gi,
+                (match, attr, path) => {
+                    // Skip if it's already an absolute URL or data URL
+                    if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('#')) {
+                        return match;
+                    }
+                    
+                    // Create full GitHub raw URL
+                    const fullPath = dirPath ? `${dirPath}/${path}` : path;
+                    const fullUrl = `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${fullPath}`;
+                    
+                    return `${attr}="${fullUrl}"`;
+                }
             );
 
-            // Add a header to indicate this is viewed through the portfolio
-            const finalHtml = processedHtml.replace(
-                /<body[^>]*>/i,
-                `<body>
-                    <div class="portfolio-header">
-                        <h3>📄 ${filePath.split('/').pop()} - Portfolio Viewer</h3>
-                        <small>Viewing from ${currentUsername}/${currentRepo}</small>
-                    </div>`
-            );
-
-            return finalHtml;
+            return processedHtml;
         }
 
         function navigateToRoot() {
