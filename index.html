@@ -746,12 +746,150 @@
                     // Show image in lightbox
                     showImageInLightbox(file.download_url);
                 } else if (isHtmlFile(file.name)) {
-                    // Open HTML file in new tab using raw GitHub content
-                    const rawUrl = `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/${file.path}`;
-                    window.open(rawUrl, '_blank');
+                    // Try multiple approaches for HTML files
+                    openHtmlFile(file);
                 } else {
                     // For other files, open in GitHub
                     window.open(file.html_url, '_blank');
+                }
+            }
+        }
+
+        async function openHtmlFile(file) {
+            try {
+                // First, try to check if GitHub Pages is available
+                const githubPagesUrl = `https://${currentUsername}.github.io/${currentRepo}/${file.path}`;
+                
+                // Create a temporary window to test GitHub Pages
+                const testWindow = window.open('', '_blank');
+                testWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Loading...</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+                                .loading { color: #667eea; }
+                                .error { color: #e74c3c; }
+                                .success { color: #27ae60; }
+                            </style>
+                        </head>
+                        <body>
+                            <h2 class="loading">🔄 Loading HTML file...</h2>
+                            <p>Trying to open your HTML file. Please wait...</p>
+                        </body>
+                    </html>
+                `);
+
+                // Test if GitHub Pages URL works
+                const testResponse = await fetch(githubPagesUrl, { method: 'HEAD', mode: 'no-cors' });
+                
+                // If GitHub Pages might be available, try it
+                testWindow.location.href = githubPagesUrl;
+                
+            } catch (error) {
+                // Fallback: Try raw GitHub content
+                try {
+                    const rawUrl = `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}`;
+                    const response = await fetch(rawUrl);
+                    
+                    if (response.ok) {
+                        const htmlContent = await response.text();
+                        const newWindow = window.open('', '_blank');
+                        newWindow.document.write(htmlContent);
+                        newWindow.document.close();
+                    } else {
+                        // Try with master branch instead of main
+                        const masterRawUrl = `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/master/${file.path}`;
+                        const masterResponse = await fetch(masterRawUrl);
+                        
+                        if (masterResponse.ok) {
+                            const htmlContent = await masterResponse.text();
+                            const newWindow = window.open('', '_blank');
+                            newWindow.document.write(htmlContent);
+                            newWindow.document.close();
+                        } else {
+                            throw new Error('Could not load HTML file');
+                        }
+                    }
+                } catch (rawError) {
+                    // Final fallback: Open in GitHub with instructions
+                    const instructionWindow = window.open('', '_blank');
+                    instructionWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>HTML File - ${file.name}</title>
+                                <style>
+                                    body { 
+                                        font-family: Arial, sans-serif; 
+                                        max-width: 800px; 
+                                        margin: 50px auto; 
+                                        padding: 20px;
+                                        line-height: 1.6;
+                                    }
+                                    .error { 
+                                        background: #ffe6e6; 
+                                        border: 1px solid #ff9999; 
+                                        padding: 15px; 
+                                        border-radius: 5px; 
+                                        margin: 20px 0;
+                                    }
+                                    .solution { 
+                                        background: #e6f3ff; 
+                                        border: 1px solid #99ccff; 
+                                        padding: 15px; 
+                                        border-radius: 5px; 
+                                        margin: 20px 0;
+                                    }
+                                    .btn {
+                                        display: inline-block;
+                                        padding: 10px 20px;
+                                        background: #667eea;
+                                        color: white;
+                                        text-decoration: none;
+                                        border-radius: 5px;
+                                        margin: 5px;
+                                    }
+                                    .btn:hover {
+                                        background: #5a6fd8;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <h1>📄 ${file.name}</h1>
+                                <div class="error">
+                                    <strong>⚠️ Could not display HTML file directly</strong>
+                                    <p>The HTML file cannot be displayed due to browser security restrictions or GitHub configuration.</p>
+                                </div>
+                                
+                                <div class="solution">
+                                    <strong>💡 Solutions:</strong>
+                                    <ol>
+                                        <li><strong>Enable GitHub Pages:</strong> Go to your repository settings → Pages → Deploy from branch</li>
+                                        <li><strong>View raw code:</strong> Click the button below to see the HTML source code</li>
+                                        <li><strong>Download and run locally:</strong> Save the file and open it in your browser</li>
+                                    </ol>
+                                </div>
+
+                                <div>
+                                    <a href="${file.html_url}" target="_blank" class="btn">📁 View on GitHub</a>
+                                    <a href="${file.download_url}" target="_blank" class="btn">💾 Download File</a>
+                                    <a href="https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}" target="_blank" class="btn">🔍 View Raw Code</a>
+                                </div>
+
+                                <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                                    <h3>📋 Quick GitHub Pages Setup:</h3>
+                                    <ol>
+                                        <li>Go to <strong>github.com/${currentUsername}/${currentRepo}</strong></li>
+                                        <li>Click <strong>Settings</strong> tab</li>
+                                        <li>Scroll to <strong>Pages</strong> section</li>
+                                        <li>Select <strong>Deploy from a branch</strong></li>
+                                        <li>Choose <strong>main</strong> branch</li>
+                                        <li>Your HTML files will be available at: <strong>${currentUsername}.github.io/${currentRepo}</strong></li>
+                                    </ol>
+                                </div>
+                            </body>
+                        </html>
+                    `);
                 }
             }
         }
