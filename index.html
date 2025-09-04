@@ -580,23 +580,24 @@
   let currentLightboxIndex = 0;
 
   // ================================
-  // STORAGE FUNCTIONS
-  // ================================
-  function saveToStorage() {
-    localStorage.setItem("folders", JSON.stringify(folders));
-    localStorage.setItem("folderFiles", JSON.stringify(folderFiles));
-  }
+// STORAGE FUNCTIONS
+// ================================
+function saveToStorage() {
+  localStorage.setItem("folders", JSON.stringify(folders));
+  localStorage.setItem("folderFiles", JSON.stringify(folderFiles));
+}
 
-  function loadFromStorage() {
-    const savedFolders = localStorage.getItem("folders");
-    const savedFiles = localStorage.getItem("folderFiles");
+function loadFromStorage() {
+  const savedFolders = localStorage.getItem("folders");
+  const savedFiles = localStorage.getItem("folderFiles");
 
-    if (savedFolders && savedFiles) {
-      folders = JSON.parse(savedFolders);
-      folderFiles = JSON.parse(savedFiles);
-      updateFoldersDisplay();
-    }
+  if (savedFolders && savedFiles) {
+    folders = JSON.parse(savedFolders);
+    folderFiles = JSON.parse(savedFiles);
+    updateFoldersDisplay();
   }
+}
+
 
   // ================================
   // NAVIGATION
@@ -833,7 +834,7 @@
   // INIT
   // ================================
   document.addEventListener("DOMContentLoaded", loadFromStorage);
-</script>
+
 
         
         // Hobbies carousel functionality
