@@ -685,10 +685,13 @@
 
       let preview = '';
 if (file.data.startsWith("data:image")) {
-  // Always show as image if it's base64 data:image
+  // Show images
   preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
+} else if (file.type === "text/html") {
+  // Show HTML files inside an iframe
+  preview = `<iframe src="${file.data}" class="file-preview" style="border:1px solid #ccc;"></iframe>`;
 } else {
-  // Default: show generic file icon
+  // Default: file icon
   preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
 }
 
@@ -734,21 +737,29 @@ if (file.data.startsWith("data:image")) {
   });
 
   function handleFiles(files) {
-    [...files].forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        folderFiles[selectedFolder].push({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          data: e.target.result
-        });
-        updateFilesDisplay();
-        updateFoldersDisplay();
-      };
-      reader.readAsDataURL(file);
-    });
-  }
+  [...files].forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      folderFiles[selectedFolder].push({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        data: e.target.result
+      });
+      updateFilesDisplay();
+      updateFoldersDisplay();
+    };
+
+    if (file.type.startsWith("image/")) {
+      reader.readAsDataURL(file); // images → base64
+    } else if (file.type === "text/html") {
+      reader.readAsDataURL(file); // keep iframe-friendly
+    } else {
+      reader.readAsDataURL(file); // still base64, can expand later
+    }
+  });
+}
+
         
         // Hobbies carousel functionality
         const hobbyUpload = document.getElementById('hobby-upload');
