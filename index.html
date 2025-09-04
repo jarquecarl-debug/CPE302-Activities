@@ -570,6 +570,7 @@
     </div>
 
     <script>
+  <script>
   // Global variables
   let folders = [];
   let selectedFolder = null;
@@ -579,33 +580,12 @@
   let currentLightboxImages = [];
   let currentLightboxIndex = 0;
 
-  // ================================
-// STORAGE FUNCTIONS
-// ================================
-function saveToStorage() {
-  localStorage.setItem("folders", JSON.stringify(folders));
-  localStorage.setItem("folderFiles", JSON.stringify(folderFiles));
-}
-
-function loadFromStorage() {
-  const savedFolders = localStorage.getItem("folders");
-  const savedFiles = localStorage.getItem("folderFiles");
-
-  if (savedFolders && savedFiles) {
-    folders = JSON.parse(savedFolders);
-    folderFiles = JSON.parse(savedFiles);
-    updateFoldersDisplay();
-  }
-}
-
-
-  // ================================
-  // NAVIGATION
-  // ================================
+  // Navigation functionality
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const section = btn.dataset.section;
       showSection(section);
+
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     });
@@ -618,12 +598,11 @@ function loadFromStorage() {
     document.getElementById(sectionId).classList.add('active');
   }
 
-  // ================================
-  // EDITABLE CONTENT
-  // ================================
+  // Editable content functionality
   function toggleEdit(elementId) {
     const element = document.getElementById(elementId);
     const isEditable = element.contentEditable === 'true';
+
     if (isEditable) {
       element.contentEditable = 'false';
       element.style.border = '2px dashed transparent';
@@ -633,9 +612,7 @@ function loadFromStorage() {
     }
   }
 
-  // ================================
-  // FOLDER MANAGEMENT
-  // ================================
+  // Folder management
   function createFolder() {
     const folderName = document.getElementById('folder-name').value.trim();
     if (!folderName) return alert("Enter a folder name");
@@ -645,7 +622,7 @@ function loadFromStorage() {
     folderFiles[folderName] = [];
     updateFoldersDisplay();
     document.getElementById('folder-name').value = '';
-    saveToStorage();
+    saveData();
   }
 
   function updateFoldersDisplay() {
@@ -680,7 +657,6 @@ function loadFromStorage() {
     document.getElementById('folder-controls').style.display = "flex";
     document.getElementById('folder-header').style.display = "none";
     document.getElementById('files-container').innerHTML = "";
-    updateFoldersDisplay();
   }
 
   function deleteSelectedFolder() {
@@ -691,12 +667,9 @@ function loadFromStorage() {
     delete folderFiles[selectedFolder];
     exitFolder();
     updateFoldersDisplay();
-    saveToStorage();
+    saveData();
   }
 
-  // ================================
-  // FILES
-  // ================================
   function updateFilesDisplay() {
     const container = document.getElementById('files-container');
     container.innerHTML = '';
@@ -716,6 +689,8 @@ function loadFromStorage() {
       let preview = '';
       if (file.data.startsWith("data:image")) {
         preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
+      } else if (file.type === "text/html") {
+        preview = `<iframe src="${file.data}" class="file-preview" style="border:1px solid #ccc;"></iframe>`;
       } else {
         preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
       }
@@ -727,13 +702,9 @@ function loadFromStorage() {
         <button class="delete-file">×</button>
       `;
 
-      // click preview
-      fileDiv.addEventListener('click', (e) => {
-        if (e.target.classList.contains("delete-file")) return;
+      fileDiv.addEventListener('click', () => {
         if (file.type.startsWith("image/")) {
-          currentLightboxImages = folderFiles[selectedFolder]
-            .filter(f => f.type.startsWith("image/"))
-            .map(f => f.data);
+          currentLightboxImages = folderFiles[selectedFolder].filter(f => f.type.startsWith("image/")).map(f => f.data);
           currentLightboxIndex = currentLightboxImages.indexOf(file.data);
           document.getElementById('lightbox').classList.add('active');
           updateLightboxImage();
@@ -747,13 +718,12 @@ function loadFromStorage() {
         }
       });
 
-      // delete file
       fileDiv.querySelector('.delete-file').addEventListener('click', () => {
         if (confirm("Delete this file?")) {
           folderFiles[selectedFolder].splice(index, 1);
           updateFilesDisplay();
           updateFoldersDisplay();
-          saveToStorage();
+          saveData();
         }
       });
 
@@ -761,9 +731,7 @@ function loadFromStorage() {
     });
   }
 
-  // ================================
-  // FILE UPLOAD
-  // ================================
+  // File Upload
   const uploadArea = document.getElementById("upload-area");
   const fileInput = document.getElementById("file-input");
 
@@ -796,39 +764,79 @@ function loadFromStorage() {
         });
         updateFilesDisplay();
         updateFoldersDisplay();
-        saveToStorage();
+        saveData();
       };
+
       reader.readAsDataURL(file);
     });
   }
 
-  // ================================
-  // LIGHTBOX
-  // ================================
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImg = document.getElementById("lightbox-img");
-
-  document.getElementById("lightbox-close").addEventListener("click", () => {
-    lightbox.classList.remove("active");
-  });
-
-  document.getElementById("prev-img").addEventListener("click", () => {
-    if (currentLightboxImages.length > 0) {
-      currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
-      updateLightboxImage();
-    }
-  });
-
-  document.getElementById("next-img").addEventListener("click", () => {
-    if (currentLightboxImages.length > 0) {
-      currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
-      updateLightboxImage();
-    }
-  });
-
+  // Lightbox
   function updateLightboxImage() {
-    lightboxImg.src = currentLightboxImages[currentLightboxIndex];
+    const img = document.getElementById('lightbox-img');
+    img.src = currentLightboxImages[currentLightboxIndex];
   }
+  document.getElementById('lightbox-close').addEventListener('click', () => {
+    document.getElementById('lightbox').classList.remove('active');
+  });
+  document.getElementById('lightbox-prev').addEventListener('click', () => {
+    currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
+    updateLightboxImage();
+  });
+  document.getElementById('lightbox-next').addEventListener('click', () => {
+    currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
+    updateLightboxImage();
+  });
+
+  // Save & Load (localStorage)
+  function saveData() {
+    localStorage.setItem("portfolioData", JSON.stringify({ folders, folderFiles }));
+  }
+  function loadData() {
+    const saved = localStorage.getItem("portfolioData");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      folders = parsed.folders || [];
+      folderFiles = parsed.folderFiles || {};
+      updateFoldersDisplay();
+    }
+  }
+  window.addEventListener("load", loadData);
+
+  // Export / Import
+  document.getElementById("export-data").addEventListener("click", () => {
+    const data = JSON.stringify({ folders, folderFiles });
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "portfolio-backup.json";
+    a.click();
+  });
+
+  document.getElementById("import-data").addEventListener("click", () => {
+    document.getElementById("import-file").click();
+  });
+
+  document.getElementById("import-file").addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        folders = parsed.folders || [];
+        folderFiles = parsed.folderFiles || {};
+        updateFoldersDisplay();
+        saveData();
+      } catch {
+        alert("Invalid backup file");
+      }
+    };
+    reader.readAsText(file);
+  });
+
+
 
   // ================================
   // INIT
