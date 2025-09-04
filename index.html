@@ -636,12 +636,12 @@
     function openFolder(folderName) {
         selectedFolder = folderName;
 
-        // Hide folder list + create folder controls
+        // Hide folder grid + create controls
         document.getElementById('folders-container').style.display = "none";
         document.getElementById('folder-controls').style.display = "none";
 
-        // Show inside-folder header
-        document.getElementById('folder-header').style.display = "block";
+        // Show header (Back + Delete)
+        document.getElementById('folder-header').style.display = "flex";
         document.getElementById('current-folder-name').textContent = folderName;
 
         updateFilesDisplay();
@@ -650,18 +650,19 @@
     function exitFolder() {
         selectedFolder = null;
 
-        // Show folders + controls again
+        // Show folder grid + controls
         document.getElementById('folders-container').style.display = "grid";
         document.getElementById('folder-controls').style.display = "flex";
 
-        // Hide inside-folder header
+        // Hide folder header
         document.getElementById('folder-header').style.display = "none";
 
+        // Clear files
         document.getElementById('files-container').innerHTML = "";
     }
 
     function deleteSelectedFolder() {
-        if (!selectedFolder) return alert("Select a folder first");
+        if (!selectedFolder) return alert("Open a folder first");
         if (!confirm(`Delete folder "${selectedFolder}" and all its files?`)) return;
 
         folders = folders.filter(f => f !== selectedFolder);
@@ -699,22 +700,6 @@
                 <small>${(file.size/1024).toFixed(1)} KB</small>
                 <button class="delete-file">×</button>
             `;
-
-            // File click
-            fileDiv.querySelector('.file-preview').addEventListener('click', () => {
-                if (file.type.startsWith('image/')) {
-                    openLightbox(index, selectedFolder);
-                } else if (file.name.endsWith('.html')) {
-                    const newTab = window.open();
-                    newTab.document.write(file.data);
-                    newTab.document.close();
-                } else {
-                    const a = document.createElement('a');
-                    a.href = file.data;
-                    a.download = file.name;
-                    a.click();
-                }
-            });
 
             // Delete file
             fileDiv.querySelector('.delete-file').addEventListener('click', () => {
