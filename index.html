@@ -756,142 +756,270 @@
         }
 
         async function openHtmlFile(file) {
+            // Create loading window
+            const loadingWindow = window.open('', '_blank');
+            loadingWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Loading ${file.name}...</title>
+                        <style>
+                            body { 
+                                font-family: 'Segoe UI', Arial, sans-serif; 
+                                text-align: center; 
+                                padding: 50px;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                color: white;
+                                margin: 0;
+                            }
+                            .loading-container {
+                                background: rgba(255, 255, 255, 0.1);
+                                backdrop-filter: blur(10px);
+                                padding: 40px;
+                                border-radius: 20px;
+                                max-width: 500px;
+                                margin: 0 auto;
+                            }
+                            .spinner {
+                                border: 4px solid rgba(255, 255, 255, 0.3);
+                                border-top: 4px solid white;
+                                border-radius: 50%;
+                                width: 40px;
+                                height: 40px;
+                                animation: spin 1s linear infinite;
+                                margin: 20px auto;
+                            }
+                            @keyframes spin {
+                                0% { transform: rotate(0deg); }
+                                100% { transform: rotate(360deg); }
+                            }
+                            .status {
+                                margin: 15px 0;
+                                font-size: 14px;
+                                opacity: 0.9;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="loading-container">
+                            <h2>🔄 Loading HTML File</h2>
+                            <div class="spinner"></div>
+                            <div class="status" id="status">Fetching content...</div>
+                        </div>
+                    </body>
+                </html>
+            `);
+
             try {
-                // First, try to check if GitHub Pages is available
-                const githubPagesUrl = `https://${currentUsername}.github.io/${currentRepo}/${file.path}`;
-                
-                // Create a temporary window to test GitHub Pages
-                const testWindow = window.open('', '_blank');
-                testWindow.document.write(`
+                // First, try to fetch the raw content
+                const rawUrls = [
+                    `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}`,
+                    `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/master/${file.path}`
+                ];
+
+                let htmlContent = null;
+                let workingUrl = null;
+
+                for (const url of rawUrls) {
+                    try {
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            htmlContent = await response.text();
+                            workingUrl = url;
+                            break;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+
+                if (htmlContent) {
+                    // Update loading status
+                    const statusEl = loadingWindow.document.getElementById('status');
+                    if (statusEl) statusEl.textContent = 'Rendering HTML content...';
+
+                    // Process the HTML to fix relative paths
+                    const processedHtml = await processHtmlContent(htmlContent, file.path);
+                    
+                    // Replace the loading content with the actual HTML
+                    loadingWindow.document.open();
+                    loadingWindow.document.write(processedHtml);
+                    loadingWindow.document.close();
+                } else {
+                    throw new Error('Could not fetch HTML content');
+                }
+
+            } catch (error) {
+                // Show helpful error page with setup instructions
+                loadingWindow.document.open();
+                loadingWindow.document.write(`
                     <html>
                         <head>
-                            <title>Loading...</title>
+                            <title>HTML File - ${file.name}</title>
                             <style>
-                                body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-                                .loading { color: #667eea; }
-                                .error { color: #e74c3c; }
-                                .success { color: #27ae60; }
+                                body { 
+                                    font-family: 'Segoe UI', Arial, sans-serif; 
+                                    max-width: 800px; 
+                                    margin: 0 auto; 
+                                    padding: 20px;
+                                    line-height: 1.6;
+                                    background: #f8f9fa;
+                                }
+                                .header {
+                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                    color: white;
+                                    padding: 30px;
+                                    border-radius: 15px;
+                                    text-align: center;
+                                    margin-bottom: 30px;
+                                }
+                                .card { 
+                                    background: white; 
+                                    border: 1px solid #ddd; 
+                                    padding: 20px; 
+                                    border-radius: 10px; 
+                                    margin: 20px 0;
+                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                                }
+                                .error { 
+                                    background: #ffe6e6; 
+                                    border-color: #ff9999; 
+                                    color: #c0392b;
+                                }
+                                .solution { 
+                                    background: #e8f5e8; 
+                                    border-color: #4caf50; 
+                                    color: #2e7d2e;
+                                }
+                                .info {
+                                    background: #e3f2fd;
+                                    border-color: #2196f3;
+                                    color: #1565c0;
+                                }
+                                .btn {
+                                    display: inline-block;
+                                    padding: 12px 24px;
+                                    background: #667eea;
+                                    color: white;
+                                    text-decoration: none;
+                                    border-radius: 8px;
+                                    margin: 8px;
+                                    font-weight: 500;
+                                    transition: background 0.3s;
+                                }
+                                .btn:hover {
+                                    background: #5a6fd8;
+                                }
+                                .btn-secondary {
+                                    background: #6c757d;
+                                }
+                                .btn-secondary:hover {
+                                    background: #5a6268;
+                                }
+                                ol { padding-left: 20px; }
+                                li { margin: 8px 0; }
+                                .highlight {
+                                    background: #fff3cd;
+                                    border: 1px solid #ffc107;
+                                    padding: 15px;
+                                    border-radius: 8px;
+                                    margin: 15px 0;
+                                }
                             </style>
                         </head>
                         <body>
-                            <h2 class="loading">🔄 Loading HTML file...</h2>
-                            <p>Trying to open your HTML file. Please wait...</p>
+                            <div class="header">
+                                <h1>📄 ${file.name}</h1>
+                                <p>HTML File Viewer</p>
+                            </div>
+
+                            <div class="card error">
+                                <h3>⚠️ Cannot Display HTML File</h3>
+                                <p>The HTML file cannot be rendered directly due to browser security restrictions and missing GitHub Pages configuration.</p>
+                            </div>
+                            
+                            <div class="card solution">
+                                <h3>✅ Quick Solution - Enable GitHub Pages:</h3>
+                                <ol>
+                                    <li>Go to your repository: <strong>github.com/${currentUsername}/${currentRepo}</strong></li>
+                                    <li>Click the <strong>Settings</strong> tab</li>
+                                    <li>Scroll down to <strong>Pages</strong> section in the sidebar</li>
+                                    <li>Under "Source", select <strong>"Deploy from a branch"</strong></li>
+                                    <li>Choose <strong>"main"</strong> (or "master") branch</li>
+                                    <li>Click <strong>Save</strong></li>
+                                </ol>
+                                
+                                <div class="highlight">
+                                    <strong>📍 After setup, your HTML files will be live at:</strong><br>
+                                    <code>https://${currentUsername}.github.io/${currentRepo}/${file.path}</code>
+                                </div>
+                            </div>
+
+                            <div class="card info">
+                                <h3>🔍 View Options:</h3>
+                                <div style="text-align: center;">
+                                    <a href="${file.html_url}" target="_blank" class="btn">📁 View Code on GitHub</a>
+                                    <a href="${file.download_url}" target="_blank" class="btn">💾 Download File</a>
+                                    <a href="https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}" target="_blank" class="btn btn-secondary">📄 View Raw HTML</a>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3>💡 Pro Tip:</h3>
+                                <p>Once GitHub Pages is enabled, all HTML files in your repository will be accessible as live web pages. This is perfect for showcasing your projects!</p>
+                            </div>
                         </body>
                     </html>
                 `);
-
-                // Test if GitHub Pages URL works
-                const testResponse = await fetch(githubPagesUrl, { method: 'HEAD', mode: 'no-cors' });
-                
-                // If GitHub Pages might be available, try it
-                testWindow.location.href = githubPagesUrl;
-                
-            } catch (error) {
-                // Fallback: Try raw GitHub content
-                try {
-                    const rawUrl = `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}`;
-                    const response = await fetch(rawUrl);
-                    
-                    if (response.ok) {
-                        const htmlContent = await response.text();
-                        const newWindow = window.open('', '_blank');
-                        newWindow.document.write(htmlContent);
-                        newWindow.document.close();
-                    } else {
-                        // Try with master branch instead of main
-                        const masterRawUrl = `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/master/${file.path}`;
-                        const masterResponse = await fetch(masterRawUrl);
-                        
-                        if (masterResponse.ok) {
-                            const htmlContent = await masterResponse.text();
-                            const newWindow = window.open('', '_blank');
-                            newWindow.document.write(htmlContent);
-                            newWindow.document.close();
-                        } else {
-                            throw new Error('Could not load HTML file');
-                        }
-                    }
-                } catch (rawError) {
-                    // Final fallback: Open in GitHub with instructions
-                    const instructionWindow = window.open('', '_blank');
-                    instructionWindow.document.write(`
-                        <html>
-                            <head>
-                                <title>HTML File - ${file.name}</title>
-                                <style>
-                                    body { 
-                                        font-family: Arial, sans-serif; 
-                                        max-width: 800px; 
-                                        margin: 50px auto; 
-                                        padding: 20px;
-                                        line-height: 1.6;
-                                    }
-                                    .error { 
-                                        background: #ffe6e6; 
-                                        border: 1px solid #ff9999; 
-                                        padding: 15px; 
-                                        border-radius: 5px; 
-                                        margin: 20px 0;
-                                    }
-                                    .solution { 
-                                        background: #e6f3ff; 
-                                        border: 1px solid #99ccff; 
-                                        padding: 15px; 
-                                        border-radius: 5px; 
-                                        margin: 20px 0;
-                                    }
-                                    .btn {
-                                        display: inline-block;
-                                        padding: 10px 20px;
-                                        background: #667eea;
-                                        color: white;
-                                        text-decoration: none;
-                                        border-radius: 5px;
-                                        margin: 5px;
-                                    }
-                                    .btn:hover {
-                                        background: #5a6fd8;
-                                    }
-                                </style>
-                            </head>
-                            <body>
-                                <h1>📄 ${file.name}</h1>
-                                <div class="error">
-                                    <strong>⚠️ Could not display HTML file directly</strong>
-                                    <p>The HTML file cannot be displayed due to browser security restrictions or GitHub configuration.</p>
-                                </div>
-                                
-                                <div class="solution">
-                                    <strong>💡 Solutions:</strong>
-                                    <ol>
-                                        <li><strong>Enable GitHub Pages:</strong> Go to your repository settings → Pages → Deploy from branch</li>
-                                        <li><strong>View raw code:</strong> Click the button below to see the HTML source code</li>
-                                        <li><strong>Download and run locally:</strong> Save the file and open it in your browser</li>
-                                    </ol>
-                                </div>
-
-                                <div>
-                                    <a href="${file.html_url}" target="_blank" class="btn">📁 View on GitHub</a>
-                                    <a href="${file.download_url}" target="_blank" class="btn">💾 Download File</a>
-                                    <a href="https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${file.path}" target="_blank" class="btn">🔍 View Raw Code</a>
-                                </div>
-
-                                <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-                                    <h3>📋 Quick GitHub Pages Setup:</h3>
-                                    <ol>
-                                        <li>Go to <strong>github.com/${currentUsername}/${currentRepo}</strong></li>
-                                        <li>Click <strong>Settings</strong> tab</li>
-                                        <li>Scroll to <strong>Pages</strong> section</li>
-                                        <li>Select <strong>Deploy from a branch</strong></li>
-                                        <li>Choose <strong>main</strong> branch</li>
-                                        <li>Your HTML files will be available at: <strong>${currentUsername}.github.io/${currentRepo}</strong></li>
-                                    </ol>
-                                </div>
-                            </body>
-                        </html>
-                    `);
-                }
+                loadingWindow.document.close();
             }
+        }
+
+        async function processHtmlContent(htmlContent, filePath) {
+            // Get the base path for the file (directory containing the HTML file)
+            const pathParts = filePath.split('/');
+            pathParts.pop(); // Remove filename
+            const basePath = pathParts.join('/');
+            
+            // Create a base URL for resolving relative paths
+            const baseUrl = `https://raw.githubusercontent.com/${currentUsername}/${currentRepo}/main/${basePath}/`;
+            
+            // Add a base tag to help with relative paths and some basic styling
+            const processedHtml = htmlContent.replace(
+                /<head>/i,
+                `<head>
+                    <base href="${baseUrl}">
+                    <style>
+                        /* Portfolio viewer styles */
+                        body { 
+                            font-family: 'Segoe UI', Arial, sans-serif; 
+                            line-height: 1.6;
+                            margin: 20px;
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            padding: 20px;
+                        }
+                        .portfolio-header {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            padding: 15px;
+                            border-radius: 10px;
+                            margin-bottom: 20px;
+                            text-align: center;
+                        }
+                    </style>`
+            );
+
+            // Add a header to indicate this is viewed through the portfolio
+            const finalHtml = processedHtml.replace(
+                /<body[^>]*>/i,
+                `<body>
+                    <div class="portfolio-header">
+                        <h3>📄 ${filePath.split('/').pop()} - Portfolio Viewer</h3>
+                        <small>Viewing from ${currentUsername}/${currentRepo}</small>
+                    </div>`
+            );
+
+            return finalHtml;
         }
 
         function navigateToRoot() {
