@@ -871,6 +871,9 @@
 
         // Initialize the page
         window.addEventListener('load', () => {
+            initializeFolderStructure();
+            updateDisplay();
+            updateBreadcrumb();
             updateCarousel();
         });
     </script>
