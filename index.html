@@ -616,6 +616,17 @@
         document.getElementById('folder-name').value = '';
     }
 
+    function createFolder() {
+        const folderName = document.getElementById('folder-name').value.trim();
+        if (!folderName) return alert("Enter a folder name");
+        if (folders.includes(folderName)) return alert("Folder already exists");
+
+        folders.push(folderName);
+        folderFiles[folderName] = [];
+        updateFoldersDisplay();
+        document.getElementById('folder-name').value = '';
+    }
+
     function updateFoldersDisplay() {
         const container = document.getElementById('folders-container');
         container.innerHTML = '';
@@ -636,8 +647,10 @@
     function openFolder(folderName) {
         selectedFolder = folderName;
 
-        // Hide folder list
+        // Hide folder list + create folder controls
         document.getElementById('folders-container').style.display = "none";
+        document.getElementById('folder-controls').style.display = "none";
+
         // Show inside-folder header
         document.getElementById('folder-header').style.display = "block";
         document.getElementById('current-folder-name').textContent = folderName;
@@ -647,8 +660,14 @@
 
     function exitFolder() {
         selectedFolder = null;
+
+        // Show folders + controls again
         document.getElementById('folders-container').style.display = "grid";
+        document.getElementById('folder-controls').style.display = "flex";
+
+        // Hide inside-folder header
         document.getElementById('folder-header').style.display = "none";
+
         document.getElementById('files-container').innerHTML = "";
     }
 
