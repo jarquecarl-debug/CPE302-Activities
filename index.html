@@ -130,22 +130,31 @@
             transform: scale(1.05);
         }
 
-        .folder-manager {
+        .github-config {
             margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
         }
 
-        .folder-controls {
+        .github-config h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .config-input {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             flex-wrap: wrap;
         }
 
-        .folder-controls input {
+        .config-input input {
+            flex: 1;
             padding: 10px;
             border: 2px solid #ddd;
             border-radius: 10px;
-            flex: 1;
             min-width: 200px;
         }
 
@@ -172,108 +181,75 @@
             background: #c0392b;
         }
 
-        .folders-grid {
+        .project-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .folder {
-            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            position: relative;
-        }
-
-        .folder:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            border-color: #667eea;
-        }
-
-        .folder.selected {
-            border-color: #667eea;
-            background: linear-gradient(145deg, #667eea, #5a6fd8);
-            color: white;
-        }
-
-        .folder-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-
-        .folder.selected .folder-icon {
-            color: white;
-        }
-
-        .file-upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 40px 20px;
-            text-align: center;
-            margin: 20px 0;
-            background: rgba(102, 126, 234, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .file-upload-area:hover {
-            background: rgba(102, 126, 234, 0.1);
-            transform: scale(1.02);
-        }
-
-        .file-upload-area.dragover {
-            border-color: #5a6fd8;
-            background: rgba(102, 126, 234, 0.15);
-        }
-
-        .files-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
             margin-top: 20px;
         }
 
-        .file-item {
+        .project-item {
             background: white;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
+            border-radius: 15px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            position: relative;
+            border: 2px solid transparent;
         }
 
-        .file-item:hover {
-            transform: translateY(-3px);
+        .project-item:hover {
+            transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
         }
 
-        .file-preview {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 8px;
+        .project-icon {
+            font-size: 2rem;
             margin-bottom: 10px;
         }
 
-        .delete-file {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-            font-size: 14px;
+        .project-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .project-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .project-link:hover {
+            color: #5a6fd8;
+            text-decoration: underline;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid rgba(231, 76, 60, 0.3);
+            color: #c0392b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: rgba(46, 204, 113, 0.1);
+            border: 2px solid rgba(46, 204, 113, 0.3);
+            color: #27ae60;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
         }
 
         .carousel-container {
@@ -436,16 +412,12 @@
                 font-size: 2rem;
             }
 
-            .folder-controls {
+            .config-input {
                 flex-direction: column;
             }
 
-            .folders-grid {
+            .project-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .files-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
 
             .carousel-image {
@@ -466,378 +438,239 @@
 </head>
 <body>
     <div class="container">
-    <header>
-      <h1>My Portfolio</h1>
-      <p class="subtitle">Welcome to my creative space</p>
-    </header>
+        <header>
+            <h1>My Portfolio</h1>
+            <p class="subtitle">Welcome to my creative space</p>
+        </header>
 
-    <nav class="nav">
-      <button class="nav-btn active" data-section="about">About</button>
-      <button class="nav-btn" data-section="hobbies">Hobbies</button>
-      <button class="nav-btn" data-section="portfolio">Portfolio</button>
-      <button class="nav-btn" data-section="contact">Contact</button>
-    </nav>
+        <nav class="nav">
+            <button class="nav-btn active" data-section="about">About</button>
+            <button class="nav-btn" data-section="hobbies">Hobbies</button>
+            <button class="nav-btn" data-section="portfolio">Projects</button>
+            <button class="nav-btn" data-section="contact">Contact</button>
+        </nav>
 
-         <!-- About -->
-    <section class="section active" id="about">
-      <h2>About Me</h2>
-      <div class="editable" id="about-content">
-        <p>Hello! I'm a passionate creator who loves to explore new technologies...</p>
-      </div>
-      <button class="edit-btn" onclick="toggleEdit('about-content')">Edit</button>
-    </section>
-
-       <!-- Hobbies -->
-    <section class="section" id="hobbies">
-      <h2>My Hobbies</h2>
-      <div class="editable" id="hobbies-content">
-        <p>Photography, coding, hiking, and digital art...</p>
-      </div>
-      <button class="edit-btn" onclick="toggleEdit('hobbies-content')">Edit</button>
-
-      <div class="carousel-container">
-        <div class="carousel" id="hobbies-carousel">
-          <div class="carousel-track" id="carousel-track">
-            <div class="carousel-slide">
-              <img src="data:image/svg+xml,..."
-                   alt="Upload first photo" class="carousel-image">
+        <!-- About -->
+        <section class="section active" id="about">
+            <h2>About Me</h2>
+            <div class="editable" id="about-content">
+                <p>Hello! I'm a passionate creator who loves to explore new technologies and build amazing projects. Welcome to my portfolio where you can see my work and learn more about me.</p>
             </div>
-          </div>
-        </div>
-        <div class="carousel-controls">
-          <button class="carousel-btn" onclick="previousSlide()">‹</button>
-          <button class="carousel-btn" onclick="nextSlide()">›</button>
-        </div>
-        <div class="upload-btn-container">
-          <input type="file" id="hobby-upload" multiple accept="image/*" style="display:none;">
-          <button class="upload-btn" onclick="document.getElementById('hobby-upload').click()">Upload Photos</button>
-        </div>
-      </div>
-    </section>
+            <button class="edit-btn" onclick="toggleEdit('about-content')">Edit</button>
+        </section>
 
-      <!-- Portfolio -->
-    <section class="section" id="portfolio">
-      <h2>Portfolio Manager</h2>
-      <div class="folder-manager">
-        <div class="folder-controls" id="folder-controls">
-          <input type="text" id="folder-name" placeholder="Enter folder name">
-          <button class="btn" onclick="createFolder()">Create Folder</button>
-        </div>
-        <div class="folders-grid" id="folders-container"></div>
-        <div id="folder-header" style="display:none; gap:10px;">
-          <button class="btn" onclick="exitFolder()">⬅ Back</button>
-          <span id="current-folder-name" style="font-weight:bold;"></span>
-          <button class="btn btn-danger" onclick="deleteSelectedFolder()">Delete This Folder</button>
-        </div>
-        <div class="file-upload-area" id="upload-area">
-          <h3>Drop files here or click to upload</h3>
-          <input type="file" id="file-input" multiple style="display:none;">
-        </div>
-        <div class="files-grid" id="files-container"></div>
-        <div id="backup-controls" style="margin-top:10px; display:flex; gap:10px;">
-          <button id="export-data">Export Portfolio</button>
-          <input type="file" id="import-file" style="display:none;">
-          <button id="import-data">Import Portfolio</button>
-        </div>
-      </div>
-    </section>
+        <!-- Hobbies -->
+        <section class="section" id="hobbies">
+            <h2>My Hobbies</h2>
+            <div class="editable" id="hobbies-content">
+                <p>Photography, coding, hiking, and digital art are some of my favorite pastimes. I love capturing moments and creating beautiful experiences through technology.</p>
+            </div>
+            <button class="edit-btn" onclick="toggleEdit('hobbies-content')">Edit</button>
 
-         <!-- Contact -->
-    <section class="section" id="contact">
-      <h2>Contact Me</h2>
-      <div class="editable" id="contact-content">
-        <p>Email: your.email@example.com</p>
-      </div>
-      <button class="edit-btn" onclick="toggleEdit('contact-content')">Edit</button>
-    </section>
-  </div>
+            <div class="carousel-container">
+                <div class="carousel" id="hobbies-carousel">
+                    <div class="carousel-track" id="carousel-track">
+                        <div class="carousel-slide">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400' viewBox='0 0 800 400'%3E%3Crect width='800' height='400' fill='%23f0f0f0'/%3E%3Ctext x='400' y='200' text-anchor='middle' dy='0.3em' font-family='Arial' font-size='24' fill='%23999'%3EUpload your first photo%3C/text%3E%3C/svg%3E"
+                                 alt="Upload first photo" class="carousel-image">
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-controls">
+                    <button class="carousel-btn" onclick="previousSlide()">‹</button>
+                    <button class="carousel-btn" onclick="nextSlide()">›</button>
+                </div>
+                <div class="upload-btn-container">
+                    <input type="file" id="hobby-upload" multiple accept="image/*" style="display:none;">
+                    <button class="upload-btn" onclick="document.getElementById('hobby-upload').click()">Upload Photos</button>
+                </div>
+            </div>
+        </section>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox">
-    <div class="lightbox-content">
-      <img class="lightbox-image" id="lightbox-image" src="" alt="">
-      <button class="lightbox-close" onclick="closeLightbox()">×</button>
-      <button class="lightbox-controls lightbox-prev" onclick="lightboxPrevious()">‹</button>
-      <button class="lightbox-controls lightbox-next" onclick="lightboxNext()">›</button>
+        <!-- Portfolio/Projects -->
+        <section class="section" id="portfolio">
+            <h2>My Projects</h2>
+            
+            <div class="github-config">
+                <h3>GitHub Repository Settings</h3>
+                <div class="config-input">
+                    <input type="text" id="github-username" placeholder="GitHub Username" value="">
+                    <input type="text" id="repo-name" placeholder="Repository Name" value="CPE302-Activities">
+                    <button class="btn" onclick="loadGitHubProjects()">Load Projects</button>
+                </div>
+                <small style="color: #666;">Enter your GitHub username and repository name to display your projects dynamically.</small>
+            </div>
+
+            <div id="loading-indicator" class="loading" style="display: none;">
+                🔄 Loading projects from GitHub...
+            </div>
+
+            <div id="error-message" class="error" style="display: none;"></div>
+            <div id="success-message" class="success" style="display: none;"></div>
+
+            <div class="project-grid" id="project-list"></div>
+        </section>
+
+        <!-- Contact -->
+        <section class="section" id="contact">
+            <h2>Contact Me</h2>
+            <div class="editable" id="contact-content">
+                <p>Email: your.email@example.com</p>
+                <p>GitHub: github.com/yourusername</p>
+                <p>LinkedIn: linkedin.com/in/yourprofile</p>
+            </div>
+            <button class="edit-btn" onclick="toggleEdit('contact-content')">Edit</button>
+        </section>
     </div>
-  </div>
 
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <img class="lightbox-image" id="lightbox-image" src="" alt="">
+            <button class="lightbox-close" onclick="closeLightbox()">×</button>
+            <button class="lightbox-controls lightbox-prev" onclick="lightboxPrevious()">‹</button>
+            <button class="lightbox-controls lightbox-next" onclick="lightboxNext()">›</button>
+        </div>
+    </div>
 
+    <script>
+        // Global variables
+        let hobbyImages = [];
+        let currentCarouselIndex = 0;
+        let currentLightboxImages = [];
+        let currentLightboxIndex = 0;
 
-  <script>
-  // Global variables
-  let folders = [];
-  let selectedFolder = null;
-  let folderFiles = {};
-  let hobbyImages = [];
-  let currentCarouselIndex = 0;
-  let currentLightboxImages = [];
-  let currentLightboxIndex = 0;
-
-  // Navigation functionality
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const section = btn.dataset.section;
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(section).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      });
-    });
-        
-  function showSection(sectionId) {
-    document.querySelectorAll('.section').forEach(section => {
-      section.classList.remove('active');
-    });
-    document.getElementById(sectionId).classList.add('active');
-  }
-
-  // Editable content functionality
-  function toggleEdit(elementId) {
-    const element = document.getElementById(elementId);
-    const isEditable = element.contentEditable === 'true';
-
-    if (isEditable) {
-      element.contentEditable = 'false';
-      element.style.border = '2px dashed transparent';
-    } else {
-      element.contentEditable = 'true';
-      element.focus();
-    }
-  }
-
-  // Folder management
-  function createFolder() {
-    const folderName = document.getElementById('folder-name').value.trim();
-    if (!folderName) return alert("Enter a folder name");
-    if (folders.includes(folderName)) return alert("Folder already exists");
-
-    folders.push(folderName);
-    folderFiles[folderName] = [];
-    updateFoldersDisplay();
-    document.getElementById('folder-name').value = '';
-    saveData();
-  }
-
-  function updateFoldersDisplay() {
-    const container = document.getElementById('folders-container');
-    container.innerHTML = '';
-
-    folders.forEach(folderName => {
-      const folderDiv = document.createElement('div');
-      folderDiv.className = 'folder';
-      folderDiv.innerHTML = `
-        <div class="folder-icon">📁</div>
-        <h4>${folderName}</h4>
-        <small>${folderFiles[folderName].length} files</small>
-      `;
-      folderDiv.addEventListener('click', () => openFolder(folderName));
-      container.appendChild(folderDiv);
-    });
-  }
-
-  function openFolder(folderName) {
-    selectedFolder = folderName;
-    document.getElementById('folders-container').style.display = "none";
-    document.getElementById('folder-controls').style.display = "none";
-    document.getElementById('folder-header').style.display = "flex";
-    document.getElementById('current-folder-name').textContent = folderName;
-    updateFilesDisplay();
-  }
-
-  function exitFolder() {
-    selectedFolder = null;
-    document.getElementById('folders-container').style.display = "grid";
-    document.getElementById('folder-controls').style.display = "flex";
-    document.getElementById('folder-header').style.display = "none";
-    document.getElementById('files-container').innerHTML = "";
-  }
-
-  function deleteSelectedFolder() {
-    if (!selectedFolder) return alert("Open a folder first");
-    if (!confirm(`Delete folder "${selectedFolder}" and all its files?`)) return;
-
-    folders = folders.filter(f => f !== selectedFolder);
-    delete folderFiles[selectedFolder];
-    exitFolder();
-    updateFoldersDisplay();
-    saveData();
-  }
-
-  function updateFilesDisplay() {
-    const container = document.getElementById('files-container');
-    container.innerHTML = '';
-
-    if (!selectedFolder) return;
-    const files = folderFiles[selectedFolder];
-
-    if (files.length === 0) {
-      container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#666;">No files yet</p>`;
-      return;
-    }
-
-    files.forEach((file, index) => {
-      const fileDiv = document.createElement('div');
-      fileDiv.className = 'file-item';
-
-      let preview = '';
-      if (file.data.startsWith("data:image")) {
-        preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
-      } else if (file.type === "text/html") {
-        preview = `<iframe src="${file.data}" class="file-preview" style="border:1px solid #ccc;"></iframe>`;
-      } else {
-        preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
-      }
-
-      fileDiv.innerHTML = `
-        ${preview}
-        <h5>${file.name}</h5>
-        <small>${(file.size/1024).toFixed(1)} KB</small>
-        <button class="delete-file">×</button>
-      `;
-
-      fileDiv.addEventListener('click', () => {
-        if (file.type.startsWith("image/")) {
-          currentLightboxImages = folderFiles[selectedFolder].filter(f => f.type.startsWith("image/")).map(f => f.data);
-          currentLightboxIndex = currentLightboxImages.indexOf(file.data);
-          document.getElementById('lightbox').classList.add('active');
-          updateLightboxImage();
-        } else if (file.type === "text/html") {
-          const newWindow = window.open();
-          newWindow.document.open();
-          newWindow.document.write(atob(file.data.split(",")[1]));
-          newWindow.document.close();
-        } else {
-          alert("Preview not available for this file type.");
-        }
-      });
-
-      fileDiv.querySelector('.delete-file').addEventListener('click', () => {
-        if (confirm("Delete this file?")) {
-          folderFiles[selectedFolder].splice(index, 1);
-          updateFilesDisplay();
-          updateFoldersDisplay();
-          saveData();
-        }
-      });
-
-      container.appendChild(fileDiv);
-    });
-  }
-
-  // File Upload
-  const uploadArea = document.getElementById("upload-area");
-  const fileInput = document.getElementById("file-input");
-
-  uploadArea.addEventListener("click", () => fileInput.click());
-  uploadArea.addEventListener("dragover", e => {
-    e.preventDefault();
-    uploadArea.classList.add("dragover");
-  });
-  uploadArea.addEventListener("dragleave", () => uploadArea.classList.remove("dragover"));
-  uploadArea.addEventListener("drop", e => {
-    e.preventDefault();
-    uploadArea.classList.remove("dragover");
-    if (!selectedFolder) return alert("Open a folder first");
-    handleFiles(e.dataTransfer.files);
-  });
-  fileInput.addEventListener("change", () => {
-    if (!selectedFolder) return alert("Open a folder first");
-    handleFiles(fileInput.files);
-  });
-
-  function handleFiles(files) {
-    [...files].forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        folderFiles[selectedFolder].push({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          data: e.target.result
+        // Navigation functionality
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const section = btn.dataset.section;
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(section).classList.add('active');
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
         });
-        updateFilesDisplay();
-        updateFoldersDisplay();
-        saveData();
-      };
 
-      reader.readAsDataURL(file);
-    });
-  }
+        // Editable content functionality
+        function toggleEdit(elementId) {
+            const element = document.getElementById(elementId);
+            const isEditable = element.contentEditable === 'true';
 
-  // Lightbox
-  function updateLightboxImage() {
-    const img = document.getElementById('lightbox-img');
-    img.src = currentLightboxImages[currentLightboxIndex];
-  }
-  document.getElementById('lightbox-close').addEventListener('click', () => {
-    document.getElementById('lightbox').classList.remove('active');
-  });
-  document.getElementById('lightbox-prev').addEventListener('click', () => {
-    currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
-    updateLightboxImage();
-  });
-  document.getElementById('lightbox-next').addEventListener('click', () => {
-    currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
-    updateLightboxImage();
-  });
+            if (isEditable) {
+                element.contentEditable = 'false';
+                element.style.border = '2px dashed transparent';
+                saveContent();
+            } else {
+                element.contentEditable = 'true';
+                element.focus();
+            }
+        }
 
-  // Save & Load (localStorage)
-  function saveData() {
-    localStorage.setItem("portfolioData", JSON.stringify({ folders, folderFiles }));
-  }
-  function loadData() {
-    const saved = localStorage.getItem("portfolioData");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      folders = parsed.folders || [];
-      folderFiles = parsed.folderFiles || {};
-      updateFoldersDisplay();
-    }
-  }
-  window.addEventListener("load", loadData);
+        // GitHub API functionality
+        async function loadGitHubProjects() {
+            const username = document.getElementById('github-username').value.trim();
+            const repoName = document.getElementById('repo-name').value.trim();
+            
+            if (!username || !repoName) {
+                showError('Please enter both GitHub username and repository name.');
+                return;
+            }
 
-  // Export / Import
-  document.getElementById("export-data").addEventListener("click", () => {
-    const data = JSON.stringify({ folders, folderFiles });
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "portfolio-backup.json";
-    a.click();
-  });
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const projectList = document.getElementById('project-list');
 
-  document.getElementById("import-data").addEventListener("click", () => {
-    document.getElementById("import-file").click();
-  });
+            // Show loading state
+            loadingIndicator.style.display = 'block';
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            projectList.innerHTML = '';
 
-  document.getElementById("import-file").addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const parsed = JSON.parse(e.target.result);
-        folders = parsed.folders || [];
-        folderFiles = parsed.folderFiles || {};
-        updateFoldersDisplay();
-        saveData();
-      } catch {
-        alert("Invalid backup file");
-      }
-    };
-    reader.readAsText(file);
-  });
+            try {
+                const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/`);
+                
+                if (!response.ok) {
+                    throw new Error(`Repository not found or access denied (${response.status})`);
+                }
 
+                const files = await response.json();
+                
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+                
+                if (files.length === 0) {
+                    showError('No files found in the repository.');
+                    return;
+                }
 
-  // ================================
-  // INIT
-  // ================================
-  document.addEventListener("DOMContentLoaded", loadFromStorage);
+                // Display success message
+                successMessage.textContent = `✅ Successfully loaded ${files.length} items from ${username}/${repoName}`;
+                successMessage.style.display = 'block';
 
+                // Clear and populate project list
+                projectList.innerHTML = '';
+                
+                files.forEach(file => {
+                    const projectItem = document.createElement('div');
+                    projectItem.className = 'project-item';
+                    
+                    const icon = file.type === 'dir' ? '📂' : getFileIcon(file.name);
+                    const itemType = file.type === 'dir' ? 'Folder' : 'File';
+                    
+                    projectItem.innerHTML = `
+                        <div class="project-icon">${icon}</div>
+                        <div class="project-name">${file.name}</div>
+                        <div style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">${itemType}</div>
+                        <a href="${file.html_url}" target="_blank" class="project-link">View on GitHub →</a>
+                    `;
+                    
+                    projectList.appendChild(projectItem);
+                });
 
- 
+                // Save GitHub settings
+                saveGitHubSettings(username, repoName);
+
+            } catch (error) {
+                loadingIndicator.style.display = 'none';
+                showError(`Failed to load projects: ${error.message}`);
+            }
+        }
+
+        function getFileIcon(filename) {
+            const extension = filename.split('.').pop().toLowerCase();
+            const iconMap = {
+                'html': '🌐',
+                'css': '🎨',
+                'js': '⚡',
+                'jsx': '⚛️',
+                'py': '🐍',
+                'java': '☕',
+                'cpp': '⚙️',
+                'c': '⚙️',
+                'php': '🐘',
+                'md': '📝',
+                'txt': '📄',
+                'json': '📋',
+                'xml': '📋',
+                'pdf': '📕',
+                'doc': '📘',
+                'docx': '📘',
+                'png': '🖼️',
+                'jpg': '🖼️',
+                'jpeg': '🖼️',
+                'gif': '🖼️',
+                'svg': '🖼️'
+            };
+            return iconMap[extension] || '📄';
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
         // Hobbies carousel functionality
         const hobbyUpload = document.getElementById('hobby-upload');
         hobbyUpload.addEventListener('change', (e) => {
@@ -846,6 +679,7 @@
                 reader.onload = (e) => {
                     hobbyImages.push(e.target.result);
                     updateCarousel();
+                    saveHobbyImages();
                 };
                 reader.readAsDataURL(file);
             });
@@ -927,6 +761,65 @@
             img.src = currentLightboxImages[currentLightboxIndex];
         }
 
+        // Local Storage functions
+        function saveContent() {
+            const data = {
+                about: document.getElementById('about-content').innerHTML,
+                hobbies: document.getElementById('hobbies-content').innerHTML,
+                contact: document.getElementById('contact-content').innerHTML,
+                hobbyImages: hobbyImages
+            };
+            try {
+                localStorage.setItem('portfolioContent', JSON.stringify(data));
+            } catch (e) {
+                console.warn('Could not save to localStorage:', e);
+            }
+        }
+
+        function loadContent() {
+            try {
+                const saved = localStorage.getItem('portfolioContent');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.about) document.getElementById('about-content').innerHTML = data.about;
+                    if (data.hobbies) document.getElementById('hobbies-content').innerHTML = data.hobbies;
+                    if (data.contact) document.getElementById('contact-content').innerHTML = data.contact;
+                    if (data.hobbyImages) {
+                        hobbyImages = data.hobbyImages;
+                        updateCarousel();
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not load from localStorage:', e);
+            }
+        }
+
+        function saveHobbyImages() {
+            saveContent();
+        }
+
+        function saveGitHubSettings(username, repoName) {
+            try {
+                const settings = { username, repoName };
+                localStorage.setItem('githubSettings', JSON.stringify(settings));
+            } catch (e) {
+                console.warn('Could not save GitHub settings:', e);
+            }
+        }
+
+        function loadGitHubSettings() {
+            try {
+                const saved = localStorage.getItem('githubSettings');
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    document.getElementById('github-username').value = settings.username || '';
+                    document.getElementById('repo-name').value = settings.repoName || 'CPE302-Activities';
+                }
+            } catch (e) {
+                console.warn('Could not load GitHub settings:', e);
+            }
+        }
+
         // Keyboard navigation for lightbox
         document.addEventListener('keydown', (e) => {
             if (!document.getElementById('lightbox').classList.contains('active')) return;
@@ -949,68 +842,17 @@
 
         // Initialize the page
         window.addEventListener('load', () => {
-            initializeFolderStructure();
-            updateDisplay();
-            updateBreadcrumb();
+            loadContent();
+            loadGitHubSettings();
             updateCarousel();
         });
 
-        // ================================
-// EXPORT / IMPORT FUNCTIONS
-// ================================
-
-// Export: Save folders & files as JSON download
-document.getElementById("export-data").addEventListener("click", () => {
-  const data = {
-    folders,
-    folderFiles
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "portfolio-backup.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-});
-
-// Import: Upload JSON file and restore data
-document.getElementById("import-data").addEventListener("click", () => {
-  document.getElementById("import-file").click();
-});
-
-document.getElementById("import-file").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    try {
-      const imported = JSON.parse(event.target.result);
-      if (imported.folders && imported.folderFiles) {
-        folders = imported.folders;
-        folderFiles = imported.folderFiles;
-        saveToStorage();
-        updateFoldersDisplay();
-        exitFolder(); // go back to folder view
-        alert("✅ Portfolio imported successfully!");
-      } else {
-        alert("❌ Invalid file format");
-      }
-    } catch (err) {
-      alert("❌ Failed to import portfolio: " + err.message);
-    }
-  };
-  reader.readAsText(file);
-});
-         // ===== Storage Init =====
-    window.addEventListener("load", () => {
-      loadData();
-      updateCarousel();
-    });
-
+        // Save content when editing
+        document.addEventListener('input', (e) => {
+            if (e.target.contentEditable === 'true') {
+                saveContent();
+            }
+        });
     </script>
 </body>
 </html>
