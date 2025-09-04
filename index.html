@@ -606,204 +606,171 @@
 
         // Folder management
         function createFolder() {
-                const folderName = document.getElementById('folder-name').value.trim();
-                if (!folderName) return alert("Enter a folder name");
-                if (folders.includes(folderName)) return alert("Folder already exists");
+        const folderName = document.getElementById('folder-name').value.trim();
+        if (!folderName) return alert("Enter a folder name");
+        if (folders.includes(folderName)) return alert("Folder already exists");
 
-                folders.push(folderName);
-                folderFiles[folderName] = [];
-                updateFoldersDisplay();
-                document.getElementById('folder-name').value = '';
+        folders.push(folderName);
+        folderFiles[folderName] = [];
+        updateFoldersDisplay();
+        document.getElementById('folder-name').value = '';
+    }
+
+    function updateFoldersDisplay() {
+        const container = document.getElementById('folders-container');
+        container.innerHTML = '';
+
+        folders.forEach(folderName => {
+            const folderDiv = document.createElement('div');
+            folderDiv.className = 'folder';
+            folderDiv.innerHTML = `
+                <div class="folder-icon">📁</div>
+                <h4>${folderName}</h4>
+                <small>${folderFiles[folderName].length} files</small>
+            `;
+            folderDiv.addEventListener('click', () => openFolder(folderName));
+            container.appendChild(folderDiv);
+        });
+    }
+
+    function openFolder(folderName) {
+        selectedFolder = folderName;
+
+        // Hide folder list
+        document.getElementById('folders-container').style.display = "none";
+        // Show inside-folder header
+        document.getElementById('folder-header').style.display = "block";
+        document.getElementById('current-folder-name').textContent = folderName;
+
+        updateFilesDisplay();
+    }
+
+    function exitFolder() {
+        selectedFolder = null;
+        document.getElementById('folders-container').style.display = "grid";
+        document.getElementById('folder-header').style.display = "none";
+        document.getElementById('files-container').innerHTML = "";
+    }
+
+    function deleteSelectedFolder() {
+        if (!selectedFolder) return alert("Select a folder first");
+        if (!confirm(`Delete folder "${selectedFolder}" and all its files?`)) return;
+
+        folders = folders.filter(f => f !== selectedFolder);
+        delete folderFiles[selectedFolder];
+        exitFolder();
+        updateFoldersDisplay();
+    }
+
+    function updateFilesDisplay() {
+        const container = document.getElementById('files-container');
+        container.innerHTML = '';
+
+        if (!selectedFolder) return;
+        const files = folderFiles[selectedFolder];
+
+        if (files.length === 0) {
+            container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#666;">No files yet</p>`;
+            return;
+        }
+
+        files.forEach((file, index) => {
+            const fileDiv = document.createElement('div');
+            fileDiv.className = 'file-item';
+
+            let preview = '';
+            if (file.type.startsWith('image/')) {
+                preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
+            } else {
+                preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
             }
 
-            function updateFoldersDisplay() {
-                const container = document.getElementById('folders-container');
-                container.innerHTML = '';
+            fileDiv.innerHTML = `
+                ${preview}
+                <h5>${file.name}</h5>
+                <small>${(file.size/1024).toFixed(1)} KB</small>
+                <button class="delete-file">×</button>
+            `;
 
-                folders.forEach(folderName => {
-                    const folderDiv = document.createElement('div');
-                    folderDiv.className = 'folder';
-                    folderDiv.innerHTML = `
-                        <div class="folder-icon">📁</div>
-                        <h4>${folderName}</h4>
-                        <small>${folderFiles[folderName].length} files</small>
-                    `;
-                    folderDiv.addEventListener('click', () => selectFolder(folderName, folderDiv));
-                    container.appendChild(folderDiv);
-                });
-            }
-
-            function selectFolder(folderName, element) {
-                selectedFolder = folderName;
-                document.querySelectorAll('.folder').forEach(f => f.classList.remove('selected'));
-                element.classList.add('selected');
-                updateFilesDisplay();
-            }
-
-            function deleteSelectedFolder() {
-                if (!selectedFolder) return alert("Select a folder first");
-                if (!confirm(`Delete folder "${selectedFolder}" and all its files?`)) return;
-
-                folders = folders.filter(f => f !== selectedFolder);
-                delete folderFiles[selectedFolder];
-                selectedFolder = null;
-                updateFoldersDisplay();
-                updateFilesDisplay();
-            }
-
-            function updateFilesDisplay() {
-                const container = document.getElementById('files-container');
-                container.innerHTML = '';
-
-                if (!selectedFolder) return;
-                const files = folderFiles[selectedFolder];
-
-                if (files.length === 0) {
-                    container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#666;">No files yet</p>`;
-                    return;
+            // File click
+            fileDiv.querySelector('.file-preview').addEventListener('click', () => {
+                if (file.type.startsWith('image/')) {
+                    openLightbox(index, selectedFolder);
+                } else if (file.name.endsWith('.html')) {
+                    const newTab = window.open();
+                    newTab.document.write(file.data);
+                    newTab.document.close();
+                } else {
+                    const a = document.createElement('a');
+                    a.href = file.data;
+                    a.download = file.name;
+                    a.click();
                 }
+            });
 
-                files.forEach((file, index) => {
-                    const fileDiv = document.createElement('div');
-                    fileDiv.className = 'file-item';
+            // Delete file
+            fileDiv.querySelector('.delete-file').addEventListener('click', () => {
+                if (confirm("Delete this file?")) {
+                    folderFiles[selectedFolder].splice(index, 1);
+                    updateFilesDisplay();
+                    updateFoldersDisplay();
+                }
+            });
 
-                    let preview = '';
-                    if (file.type.startsWith('image/')) {
-                        preview = `<img src="${file.data}" alt="${file.name}" class="file-preview">`;
-                    } else {
-                        preview = `<div class="file-preview" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#666;">📄</div>`;
-                    }
+            container.appendChild(fileDiv);
+        });
+    }
 
-                    fileDiv.innerHTML = `
-                        ${preview}
-                        <h5>${file.name}</h5>
-                        <small>${(file.size/1024).toFixed(1)} KB</small>
-                        <button class="delete-file">×</button>
-                    `;
+    // File uploads
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('file-input');
 
-                    // File click (view)
-                    fileDiv.querySelector('.file-preview').addEventListener('click', () => {
-                        if (file.type.startsWith('image/')) {
-                            openLightbox(index, selectedFolder);
-                        } else if (file.name.endsWith('.html')) {
-                            const newTab = window.open();
-                            newTab.document.write(file.data);
-                            newTab.document.close();
-                        } else {
-                            const a = document.createElement('a');
-                            a.href = file.data;
-                            a.download = file.name;
-                            a.click();
-                        }
-                    });
+    uploadArea.addEventListener('click', () => {
+        if (!selectedFolder) return alert("Open a folder first");
+        fileInput.click();
+    });
 
-                    // Delete button
-                    fileDiv.querySelector('.delete-file').addEventListener('click', () => {
-                        if (confirm("Delete this file?")) {
-                            folderFiles[selectedFolder].splice(index, 1);
-                            updateFilesDisplay();
-                            updateFoldersDisplay();
-                        }
-                    });
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
 
-                    container.appendChild(fileDiv);
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        if (!selectedFolder) return alert("Open a folder first");
+        handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (!selectedFolder) return alert("Open a folder first");
+        handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                folderFiles[selectedFolder].push({
+                    name: file.name,
+                    type: file.type,
+                    data: e.target.result,
+                    size: file.size
                 });
+                updateFilesDisplay();
+                updateFoldersDisplay();
+            };
+            if (file.type === "text/html") {
+                reader.readAsText(file);
+            } else {
+                reader.readAsDataURL(file);
             }
-
-            // Upload handling
-            const uploadArea = document.getElementById('upload-area');
-            const fileInput = document.getElementById('file-input');
-
-            uploadArea.addEventListener('click', () => {
-                if (!selectedFolder) return alert("Select a folder first");
-                fileInput.click();
-            });
-
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                if (!selectedFolder) return alert("Select a folder first");
-                handleFiles(e.dataTransfer.files);
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                if (!selectedFolder) return alert("Select a folder first");
-                handleFiles(e.target.files);
-            });
-
-            function handleFiles(files) {
-                Array.from(files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        folderFiles[selectedFolder].push({
-                            name: file.name,
-                            type: file.type,
-                            data: e.target.result,
-                            size: file.size
-                        });
-                        updateFilesDisplay();
-                        updateFoldersDisplay();
-                    };
-                    if (file.type === "text/html") {
-                        reader.readAsText(file);
-                    } else {
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-
-            // Lightbox for images inside folders
-            function openLightbox(index, folderName) {
-                const files = folderFiles[folderName].filter(f => f.type.startsWith('image/'));
-                const fileIndex = files.findIndex(f => f === folderFiles[folderName][index]);
-
-                if (files.length === 0) return;
-                currentLightboxImages = files.map(f => f.data);
-                currentLightboxIndex = fileIndex;
-                updateLightboxImage();
-                document.getElementById('lightbox').classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function updateLightboxImage() {
-                const img = document.getElementById('lightbox-image');
-                img.src = currentLightboxImages[currentLightboxIndex];
-            }
-
-            function closeLightbox() {
-                document.getElementById('lightbox').classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-
-            function lightboxNext() {
-                currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
-                updateLightboxImage();
-            }
-
-            function lightboxPrevious() {
-                currentLightboxIndex = currentLightboxIndex === 0 ? currentLightboxImages.length - 1 : currentLightboxIndex - 1;
-                updateLightboxImage();
-            }
-
-            document.addEventListener('keydown', (e) => {
-                if (!document.getElementById('lightbox').classList.contains('active')) return;
-                if (e.key === 'Escape') closeLightbox();
-                if (e.key === 'ArrowLeft') lightboxPrevious();
-                if (e.key === 'ArrowRight') lightboxNext();
-            });
-
-            document.getElementById('lightbox').addEventListener('click', (e) => {
-                if (e.target.id === 'lightbox') closeLightbox();
-            });
+        });
+    }
         
         // Hobbies carousel functionality
         const hobbyUpload = document.getElementById('hobby-upload');
