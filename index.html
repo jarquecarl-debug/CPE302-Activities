@@ -835,8 +835,16 @@ function loadFromStorage() {
   // ================================
   document.addEventListener("DOMContentLoaded", loadFromStorage);
 
-
-        
+        <div id="backup-controls" style="margin-top:10px; display:flex; gap:10px;">
+  <button id="export-data" style="padding:6px 12px; border:none; background:#3498db; color:#fff; border-radius:5px; cursor:pointer;">
+    Export Portfolio
+  </button>
+  <input type="file" id="import-file" style="display:none;">
+  <button id="import-data" style="padding:6px 12px; border:none; background:#2ecc71; color:#fff; border-radius:5px; cursor:pointer;">
+    Import Portfolio
+  </button>
+</div>
+ 
         // Hobbies carousel functionality
         const hobbyUpload = document.getElementById('hobby-upload');
         hobbyUpload.addEventListener('change', (e) => {
@@ -953,6 +961,58 @@ function loadFromStorage() {
             updateBreadcrumb();
             updateCarousel();
         });
+
+        // ================================
+// EXPORT / IMPORT FUNCTIONS
+// ================================
+
+// Export: Save folders & files as JSON download
+document.getElementById("export-data").addEventListener("click", () => {
+  const data = {
+    folders,
+    folderFiles
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "portfolio-backup.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+});
+
+// Import: Upload JSON file and restore data
+document.getElementById("import-data").addEventListener("click", () => {
+  document.getElementById("import-file").click();
+});
+
+document.getElementById("import-file").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const imported = JSON.parse(event.target.result);
+      if (imported.folders && imported.folderFiles) {
+        folders = imported.folders;
+        folderFiles = imported.folderFiles;
+        saveToStorage();
+        updateFoldersDisplay();
+        exitFolder(); // go back to folder view
+        alert("✅ Portfolio imported successfully!");
+      } else {
+        alert("❌ Invalid file format");
+      }
+    } catch (err) {
+      alert("❌ Failed to import portfolio: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
     </script>
 </body>
 </html>
