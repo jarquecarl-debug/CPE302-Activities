@@ -1,16 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Pedro Dela Cruz - Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Project</title>
+
+    <!-- Internal CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: lightgray;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: darkblue;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: teal;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkcyan;
+        }
+    </style>
 </head>
+<body>
+    <h1>Hello, this is my project</h1>
+    <button onclick="showMessage()">Click Me</button>
 
-<frameset rows="120,*" border="1">
-  <frame src="banner.html" name="bannerFrame" scrolling="no" noresize>
-  <frameset cols="200,*" border="1">
-    <frame src="menu.html" name="menuFrame" noresize>
-    <frame src="home.html" name="contentFrame">
-  </frameset>
-</frameset>
-
+    <!-- Internal JavaScript -->
+    <script>
+        function showMessage() {
+            alert("Button clicked!");
+        }
+    </script>
+</body>
 </html>
