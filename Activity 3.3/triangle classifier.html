@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activity 3.3 - Triangle Classifier</title>
+</head>
+<body>
+    <h1>Triangle Classifier</h1>
+    <p>This program will determine if a triangle is equilateral, scalene, or isosceles based on the length of its sides.</p>
+    <p>Click anywhere on the page or refresh to run the program.</p>
+    
+    <script>
+        // Function to determine the type of triangle
+        function determineTriangle(a, b, c) {
+            // Convert string inputs to numbers
+            a = parseFloat(a);
+            b = parseFloat(b);
+            c = parseFloat(c);
+            
+            // Check if all three sides are equal (Equilateral)
+            if (a === b && b === c && a === c) {
+                window.alert("The triangle is EQUILATERAL.");
+            }
+            // Check if only two sides are equal (Isosceles)
+            else if (a === b || b === c || a === c) {
+                window.alert("The triangle is ISOSCELES.");
+            }
+            // If no sides are equal (Scalene)
+            else {
+                window.alert("The triangle is SCALENE.");
+            }
+        }
+        
+        // Main function
+        function main() {
+            // Prompt user for three side lengths
+            var a = prompt("Enter the length of the first side:");
+            var b = prompt("Enter the length of the second side:");
+            var c = prompt("Enter the length of the third side:");
+            
+            // Check if inputs are valid numbers
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                window.alert("Error: Please enter valid numbers for all three sides!");
+                return; // Exit the function if invalid input
+            }
+            
+            // Check if inputs are positive numbers (valid triangle sides)
+            if (a <= 0 || b <= 0 || c <= 0) {
+                window.alert("Error: Triangle sides must be positive numbers!");
+                return;
+            }
+            
+            // Check triangle inequality theorem
+            a = parseFloat(a);
+            b = parseFloat(b);
+            c = parseFloat(c);
+            
+            if (a + b <= c || a + c <= b || b + c <= a) {
+                window.alert("Error: These sides cannot form a valid triangle!");
+                return;
+            }
+            
+            // Call the determineTriangle function
+            determineTriangle(a, b, c);
+        }
+        
+        // Run the main function when the page loads
+        window.onload = function() {
+            main();
+        };
+        
+        // Also allow running by clicking anywhere on the page
+        document.onclick = function() {
+            main();
+        };
+    </script>
+</body>
+</html>
