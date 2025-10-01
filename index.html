@@ -611,12 +611,11 @@
     <nav class="nav-bar">
         <div class="logo">CARL CHRISTIAN JARQUE</div>
         <div class="nav-links">
-            <button class="nav-link active" onclick="showSection('home', this)">ONLINE PORTFOLIO</button>
-            <button class="nav-link" onclick="showSection('about', this)">ABOUT ME</button>
-            <button class="nav-link" onclick="showSection('hobbies', this)">HOBBIES</button>
-            <button class="nav-link" onclick="showSection('projects', this)">PROJECTS</button>
-            <button class="nav-link" onclick="showSection('contact', this)">CONTACT</button>
-
+            <button class="nav-link active" onclick="showSection('home')">ONLINE PORTOFOLIO</button>
+            <button class="nav-link" onclick="showSection('about')">ABOUT ME</button>
+            <button class="nav-link" onclick="showSection('hobbies')">HOBBIES</button>
+            <button class="nav-link" onclick="showSection('projects')">PROJECT</button>
+            <button class="nav-link" onclick="showSection('contact')">CONTACT</button>
             <div class="progress-bar">
                 <div class="progress-fill"></div>
                 <div class="progress-dot"></div>
@@ -900,27 +899,26 @@
         };
 
         // Navigation function
-        function showSection(sectionId, clickedLink) {
-    // Hide all sections
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
-    });
-
-    // Show selected section
-    document.getElementById(sectionId).classList.add('active');
-
-    // Update active nav link
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-    });
-    clickedLink.classList.add('active');
-
-    // Load projects when projects section is shown
-    if (sectionId === 'projects') {
-        loadGitHubProjects();
-    }
-}
-
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load projects when projects section is shown
+            if (sectionId === 'projects') {
+                loadGitHubProjects();
+            }
+        }
 
         // Initialize hobby gallery
         function initHobbyGallery() {
