@@ -194,7 +194,6 @@
             width: 500px;
             height: 600px;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         /* About Section */
@@ -778,15 +777,15 @@
                 <div class="contact-icon">📞</div>
                 <div class="contact-label">Phone & Mobile</div>
                 <div class="contact-value">
-                    123-456-7890<br>
-                    +123-456-7890
+                    +63 954 545 7518<br>
+                    +63 956 895 5133
                 </div>
             </div>
             <div class="contact-item">
                 <div class="contact-icon">✉️</div>
                 <div class="contact-label">Email</div>
                 <div class="contact-value">
-                    hello@example.com
+                    jarquecarl@gmail.com
                 </div>
             </div>
             <div class="contact-item">
@@ -797,7 +796,7 @@
                 </div>
                 <div class="contact-label">GitHub</div>
                 <div class="contact-value">
-                    github.com/yourusername
+                    github.com/jarquecarl-debug
                 </div>
             </div>
             <div class="contact-item">
@@ -808,7 +807,7 @@
                 </div>
                 <div class="contact-label">Facebook</div>
                 <div class="contact-value">
-                    facebook.com/yourprofile
+                    facebook.com/carlchristian.jarque.7
                 </div>
             </div>
         </div>
@@ -827,8 +826,14 @@
 
     <script>
         // GitHub repository configuration
-        const GITHUB_USERNAME = 'YOUR_GITHUB_USERNAME'; // Replace with your GitHub username
+        const GITHUB_USERNAME = 'jarquecarl-debug'; // Replace with your actual GitHub username
         const REPO_NAME = 'CPE302-Activities';
+        
+        // Current state
+        let currentPath = '';
+        let pathHistory = [];
+        let currentHobby = 'baking';
+        let currentImageIndex = 0;
         
         // Hobby images configuration
         const hobbyImages = {
@@ -865,4 +870,357 @@
                 'git-images/food/20250225_193521.jpg',
                 'git-images/food/20250427_125005.jpg',
                 'git-images/food/20250427_125021.jpg',
-                'git-images
+                'git-images/food/20250727_155249.jpg',
+                'git-images/food/20250831_111306.jpg',
+                'git-images/food/20250928_143225.jpg',
+                'git-images/food/20250928_143347.jpg',
+                'git-images/food/IMG20240330111031.jpg'
+            ],
+            merch: [
+                'git-images/merch/20241213_134256.jpg',
+                'git-images/merch/20250503_111237.jpg',
+                'git-images/merch/20250724_200728.jpg',
+                'git-images/merch/20250724_200856.jpg',
+                'git-images/merch/20250727_192715.jpg',
+                'git-images/merch/DEBUG_IMG_20231022_112110.jpg',
+                'git-images/merch/FB_IMG_1730607850199.jpg',
+                'git-images/merch/IMG_20220323_123957_1.jpg',
+                'git-images/merch/IMG_20220323_124727.jpg',
+                'git-images/merch/IMG_20220323_124802.jpg',
+                'git-images/merch/IMG_20231022_112819_1.jpg',
+                'git-images/merch/IMG_20231022_113835_1.jpg',
+                'git-images/merch/IMG_20231022_121719_1.jpg',
+                'git-images/merch/IMG_20231022_122154_1.jpg',
+                'git-images/merch/IMG20231025125500.jpg',
+                'git-images/merch/IMG20240711114403.jpg',
+                'git-images/merch/rn_image_picker_lib_temp_348bb715-d5f0-4067-8712-54633dca01fe.jpg',
+                'git-images/merch/rn_image_picker_lib_temp_1678f4d6-cd82-4d96-afa7-2d3fb36b1972.jpg'
+            ]
+        };
+
+        // Navigation function
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load projects when projects section is shown
+            if (sectionId === 'projects') {
+                loadGitHubProjects();
+            }
+        }
+
+        // Initialize hobby gallery
+        function initHobbyGallery() {
+            const container = document.getElementById('gallery-container');
+            const images = hobbyImages[currentHobby];
+            
+            container.innerHTML = '';
+            
+            images.forEach((imagePath, index) => {
+                const img = document.createElement('img');
+                img.src = imagePath;
+                img.alt = `${currentHobby} image ${index + 1}`;
+                img.className = 'gallery-image' + (index === 0 ? ' active' : '');
+                container.appendChild(img);
+            });
+            
+            // Add controls
+            const controls = document.createElement('div');
+            controls.className = 'gallery-controls';
+            controls.innerHTML = `
+                <button class="gallery-btn" onclick="previousHobbyImage()">‹</button>
+                <button class="gallery-btn" onclick="nextHobbyImage()">›</button>
+            `;
+            container.appendChild(controls);
+            
+            currentImageIndex = 0;
+        }
+
+        // Show hobby function
+        function showHobby(hobby) {
+            currentHobby = hobby;
+            currentImageIndex = 0;
+            
+            // Update active hobby item
+            document.querySelectorAll('.hobby-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.hobby-item').classList.add('active');
+            
+            // Reinitialize gallery
+            initHobbyGallery();
+        }
+
+        // Navigate hobby images
+        function nextHobbyImage() {
+            const images = document.querySelectorAll('#gallery-container .gallery-image');
+            if (images.length === 0) return;
+            
+            images[currentImageIndex].classList.remove('active');
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            images[currentImageIndex].classList.add('active');
+        }
+
+        function previousHobbyImage() {
+            const images = document.querySelectorAll('#gallery-container .gallery-image');
+            if (images.length === 0) return;
+            
+            images[currentImageIndex].classList.remove('active');
+            currentImageIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+            images[currentImageIndex].classList.add('active');
+        }
+
+        // GitHub Projects functionality
+        async function loadGitHubProjects(path = '') {
+            const username = GITHUB_USERNAME;
+            const repoName = REPO_NAME;
+            
+            if (!username || username === 'YOUR_GITHUB_USERNAME') {
+                showError('Please update GITHUB_USERNAME in the script with your actual GitHub username.');
+                return;
+            }
+
+            currentPath = path;
+
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const projectList = document.getElementById('project-list');
+            const breadcrumbNav = document.getElementById('breadcrumb-nav');
+
+            loadingIndicator.style.display = 'block';
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            projectList.innerHTML = '';
+
+            try {
+                const apiUrl = path 
+                    ? `https://api.github.com/repos/${username}/${repoName}/contents/${path}`
+                    : `https://api.github.com/repos/${username}/${repoName}/contents/`;
+                
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Repository not found or access denied (${response.status})`);
+                }
+
+                const files = await response.json();
+                
+                loadingIndicator.style.display = 'none';
+                
+                // Filter out index.html and image folders
+                const filteredFiles = files.filter(file => {
+                    const fileName = file.name.toLowerCase();
+                    return fileName !== 'index.html' && 
+                           fileName !== 'b&w.png' && 
+                           fileName !== 'gingineer.png' &&
+                           fileName !== 'git-images';
+                });
+
+                if (filteredFiles.length === 0) {
+                    projectList.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: rgba(255,255,255,0.5);">No projects found in this folder.</p>';
+                    return;
+                }
+
+                updateBreadcrumb();
+                breadcrumbNav.style.display = path ? 'flex' : 'none';
+
+                const pathDisplay = path ? `${path}/` : 'root';
+                successMessage.textContent = `✅ Successfully loaded ${filteredFiles.length} items from ${pathDisplay}`;
+                successMessage.style.display = 'block';
+
+                projectList.innerHTML = '';
+                
+                filteredFiles.sort((a, b) => {
+                    if (a.type === 'dir' && b.type !== 'dir') return -1;
+                    if (a.type !== 'dir' && b.type === 'dir') return 1;
+                    return a.name.localeCompare(b.name);
+                });
+
+                filteredFiles.forEach(file => {
+                    const projectCard = document.createElement('div');
+                    projectCard.className = 'project-card';
+                    
+                    const icon = file.type === 'dir' ? '📁' : getFileIcon(file.name);
+                    const itemType = file.type === 'dir' ? 'Folder' : getFileType(file.name);
+                    
+                    projectCard.innerHTML = `
+                        <div class="project-icon">${icon}</div>
+                        <div class="project-name">${file.name}</div>
+                        <div class="project-type">${itemType}</div>
+                    `;
+                    
+                    projectCard.addEventListener('click', () => handleItemClick(file));
+                    projectList.appendChild(projectCard);
+                });
+
+            } catch (error) {
+                loadingIndicator.style.display = 'none';
+                showError(`Failed to load projects: ${error.message}`);
+            }
+        }
+
+        function handleItemClick(file) {
+            if (file.type === 'dir') {
+                pathHistory.push(currentPath);
+                loadGitHubProjects(file.path);
+            } else {
+                if (isHtmlFile(file.name)) {
+                    openHtmlFileInNewTab(file);
+                } else {
+                    window.open(file.html_url, '_blank');
+                }
+            }
+        }
+
+        async function openHtmlFileInNewTab(file) {
+            try {
+                const rawUrls = [
+                    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${file.path}`,
+                    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/master/${file.path}`,
+                    file.download_url
+                ];
+
+                let htmlContent = null;
+
+                for (const url of rawUrls) {
+                    try {
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            htmlContent = await response.text();
+                            break;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+
+                if (htmlContent) {
+                    const newWindow = window.open('', '_blank');
+                    const processedHtml = processHtmlForNewTab(htmlContent, file.path);
+                    newWindow.document.open();
+                    newWindow.document.write(processedHtml);
+                    newWindow.document.close();
+                    newWindow.document.title = file.name;
+                } else {
+                    window.open(`https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${file.path}`, '_blank');
+                }
+
+            } catch (error) {
+                console.error('Error opening HTML file:', error);
+                window.open(file.html_url, '_blank');
+            }
+        }
+
+        function processHtmlForNewTab(htmlContent, filePath) {
+            const pathParts = filePath.split('/');
+            pathParts.pop();
+            const dirPath = pathParts.join('/');
+            
+            const baseUrl = dirPath 
+                ? `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${dirPath}/`
+                : `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/`;
+
+            let processedHtml = htmlContent;
+
+            if (!processedHtml.includes('<base')) {
+                processedHtml = processedHtml.replace(
+                    /<head>/i,
+                    `<head>\n    <base href="${baseUrl}">`
+                );
+            }
+
+            processedHtml = processedHtml.replace(
+                /(src|href)=["'](?!https?:\/\/|data:|#)([^"']+)["']/gi,
+                (match, attr, path) => {
+                    if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('#')) {
+                        return match;
+                    }
+                    
+                    const fullPath = dirPath ? `${dirPath}/${path}` : path;
+                    const fullUrl = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${fullPath}`;
+                    
+                    return `${attr}="${fullUrl}"`;
+                }
+            );
+
+            return processedHtml;
+        }
+
+        function navigateToRoot() {
+            pathHistory = [];
+            currentPath = '';
+            loadGitHubProjects('');
+        }
+
+        function navigateBack() {
+            if (pathHistory.length > 0) {
+                const previousPath = pathHistory.pop();
+                loadGitHubProjects(previousPath);
+            }
+        }
+
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb-nav');
+            breadcrumb.innerHTML = '<a href="#" class="breadcrumb-item" onclick="navigateToRoot()">🏠 Root</a>';
+            
+            if (currentPath) {
+                const pathParts = currentPath.split('/');
+                let buildPath = '';
+                
+                pathParts.forEach((part, index) => {
+                    buildPath += (index > 0 ? '/' : '') + part;
+                    breadcrumb.innerHTML += `
+                        <span style="color: rgba(255,255,255,0.5); margin: 0 5px;">›</span>
+                        <a href="#" class="breadcrumb-item" onclick="loadGitHubProjects('${buildPath}')">${part}</a>
+                    `;
+                });
+            }
+        }
+
+        function getFileIcon(filename) {
+            const extension = filename.split('.').pop().toLowerCase();
+            const iconMap = {
+                'html': '🌐', 'css': '🎨', 'js': '⚡', 'jsx': '⚛️',
+                'py': '🐍', 'java': '☕', 'cpp': '⚙️', 'c': '⚙️',
+                'php': '🐘', 'md': '📝', 'txt': '📄', 'json': '📋',
+                'pdf': '📕', 'png': '🖼️', 'jpg': '🖼️', 'jpeg': '🖼️'
+            };
+            return iconMap[extension] || '📄';
+        }
+
+        function getFileType(filename) {
+            const extension = filename.split('.').pop().toLowerCase();
+            const typeMap = {
+                'html': 'HTML File', 'css': 'CSS File', 'js': 'JavaScript',
+                'py': 'Python Script', 'java': 'Java File', 'md': 'Markdown'
+            };
+            return typeMap[extension] || 'File';
+        }
+
+        function isHtmlFile(filename) {
+            return filename.toLowerCase().endsWith('.html') || filename.toLowerCase().endsWith('.htm');
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initHobbyGallery();
+        });
+    </script>
