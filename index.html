@@ -186,22 +186,6 @@
             min-height: 600px;
         }
 
-        .profile-placeholder {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 500px;
-            height: 600px;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 191, 255, 0.2));
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.3);
-        }
-
         .profile-image {
             position: absolute;
             right: 0;
@@ -246,17 +230,6 @@
             height: 4px;
             background: rgba(0, 217, 255, 0.3);
             border-radius: 50%;
-        }
-
-        .about-placeholder {
-            width: 350px;
-            height: 450px;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 191, 255, 0.2));
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.3);
         }
 
         .about-image {
@@ -328,15 +301,6 @@
             margin-bottom: 40px;
         }
 
-        .year-display {
-            font-size: 5rem;
-            font-weight: 300;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
-            text-align: right;
-            margin-bottom: -40px;
-        }
-
         .hobbies-content {
             display: flex;
             gap: 60px;
@@ -392,16 +356,6 @@
             border: 2px solid rgba(255, 255, 255, 0.1);
         }
 
-        .gallery-placeholder {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 191, 255, 0.2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.3);
-        }
-
         .gallery-image {
             width: 100%;
             height: 100%;
@@ -438,25 +392,6 @@
             transform: scale(1.1);
         }
 
-        .upload-section {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .upload-btn {
-            padding: 12px 30px;
-            background: rgba(0, 217, 255, 0.1);
-            border: 1px solid #00d9ff;
-            color: #00d9ff;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .upload-btn:hover {
-            background: rgba(0, 217, 255, 0.2);
-        }
-
         /* Projects Section */
         #projects {
             display: flex;
@@ -465,50 +400,6 @@
 
         .projects-header {
             margin-bottom: 40px;
-        }
-
-        .github-config {
-            margin-bottom: 30px;
-            padding: 25px;
-            background: rgba(0, 217, 255, 0.05);
-            border: 1px solid rgba(0, 217, 255, 0.2);
-            border-radius: 10px;
-        }
-
-        .github-config h3 {
-            margin-bottom: 15px;
-            color: #00d9ff;
-        }
-
-        .config-input {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .config-input input {
-            flex: 1;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border-radius: 5px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: #00d9ff;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            background: #00b8d4;
-            transform: translateY(-2px);
         }
 
         .breadcrumb {
@@ -661,7 +552,7 @@
                 width: 100%;
             }
 
-            .profile-placeholder, .profile-image {
+            .profile-image {
                 width: 100%;
                 max-width: 400px;
             }
@@ -702,10 +593,6 @@
                 font-size: 2rem;
             }
 
-            .year-display {
-                font-size: 3rem;
-            }
-
             .contact-title {
                 font-size: 2.5rem;
             }
@@ -725,11 +612,11 @@
     <nav class="nav-bar">
         <div class="logo">CARL CHRISTIAN JARQUE</div>
         <div class="nav-links">
-            <button class="nav-link active" data-section="home">ONLINE PORTOFOLIO</button>
-            <button class="nav-link" data-section="about">ABOUT ME</button>
-            <button class="nav-link" data-section="hobbies">HOBBIES</button>
-            <button class="nav-link" data-section="projects">PROJECT</button>
-            <button class="nav-link" data-section="contact">CONTACT</button>
+            <button class="nav-link active" onclick="showSection('home')">ONLINE PORTOFOLIO</button>
+            <button class="nav-link" onclick="showSection('about')">ABOUT ME</button>
+            <button class="nav-link" onclick="showSection('hobbies')">HOBBIES</button>
+            <button class="nav-link" onclick="showSection('projects')">PROJECT</button>
+            <button class="nav-link" onclick="showSection('contact')">CONTACT</button>
             <div class="progress-bar">
                 <div class="progress-fill"></div>
                 <div class="progress-dot"></div>
@@ -750,10 +637,7 @@
             </p>
         </div>
         <div class="home-image">
-            <div class="profile-placeholder">
-                Your Photo Here<br>
-                <small style="font-size: 0.8rem;">(Will be added later)</small>
-            </div>
+            <img src="b&w.png" alt="Carl Christian Jarque" class="profile-image">
         </div>
     </section>
 
@@ -775,10 +659,7 @@
                     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
                     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
                 </div>
-                <div class="about-placeholder">
-                    Your Photo Here<br>
-                    <small style="font-size: 0.8rem;">(Will be added later)</small>
-                </div>
+                <img src="gingineer.png" alt="Carl Christian Jarque" class="about-image">
             </div>
         </div>
         <div class="about-right">
@@ -817,7 +698,7 @@
         </div>
         <div class="hobbies-content">
             <div class="hobbies-list">
-                <div class="hobby-item active" data-hobby="baking">
+                <div class="hobby-item active" onclick="showHobby('baking')">
                     <div class="hobby-icon">≫</div>
                     <div class="hobby-details">
                         <h3>Baking</h3>
@@ -825,7 +706,7 @@
                         baking allows me to combine precision with creativity.</p>
                     </div>
                 </div>
-                <div class="hobby-item" data-hobby="cosplay">
+                <div class="hobby-item" onclick="showHobby('cosplay')">
                     <div class="hobby-icon">≫</div>
                     <div class="hobby-details">
                         <h3>Cosplay</h3>
@@ -833,7 +714,7 @@
                         express creativity and connect with others who share the same passion.</p>
                     </div>
                 </div>
-                <div class="hobby-item" data-hobby="coffee">
+                <div class="hobby-item" onclick="showHobby('coffee')">
                     <div class="hobby-icon">≫</div>
                     <div class="hobby-details">
                         <h3>Coffee Appreciation</h3>
@@ -841,7 +722,7 @@
                         a unique story of origin and craftsmanship.</p>
                     </div>
                 </div>
-                <div class="hobby-item" data-hobby="food">
+                <div class="hobby-item" onclick="showHobby('food')">
                     <div class="hobby-icon">≫</div>
                     <div class="hobby-details">
                         <h3>Food Explorer</h3>
@@ -849,7 +730,7 @@
                         way of experiencing different cultures and traditions.</p>
                     </div>
                 </div>
-                <div class="hobby-item" data-hobby="merch">
+                <div class="hobby-item" onclick="showHobby('merch')">
                     <div class="hobby-icon">≫</div>
                     <div class="hobby-details">
                         <h3>Merch Collecting</h3>
@@ -859,21 +740,8 @@
                 </div>
             </div>
             <div class="hobbies-gallery">
-                <div class="gallery-container">
-                    <div class="gallery-placeholder">
-                        Upload photos for this hobby<br>
-                        <small style="font-size: 0.9rem;">(Photos will appear here)</small>
-                    </div>
-                    <div class="gallery-controls" style="display: none;">
-                        <button class="gallery-btn" onclick="previousHobbyImage()">‹</button>
-                        <button class="gallery-btn" onclick="nextHobbyImage()">›</button>
-                    </div>
-                </div>
-                <div class="upload-section">
-                    <input type="file" id="hobby-upload" multiple accept="image/*" style="display:none;">
-                    <button class="upload-btn" onclick="document.getElementById('hobby-upload').click()">
-                        Upload Photos for Selected Hobby
-                    </button>
+                <div class="gallery-container" id="gallery-container">
+                    <!-- Images will be dynamically loaded here -->
                 </div>
             </div>
         </div>
@@ -884,16 +752,6 @@
         <div class="projects-header">
             <h2 class="section-title">SELECTED PROJECT</h2>
             <div class="title-underline"></div>
-        </div>
-
-        <div class="github-config">
-            <h3>GitHub Repository Settings</h3>
-            <div class="config-input">
-                <input type="text" id="github-username" placeholder="Your GitHub Username" value="">
-                <input type="text" id="repo-name" placeholder="Repository Name" value="CPE302-Activities">
-                <button class="btn" onclick="saveGitHubSettings()">Save & Load Projects</button>
-            </div>
-            <small style="color: rgba(255,255,255,0.6);">Set your GitHub username once, and your projects will automatically load!</small>
         </div>
 
         <div class="breadcrumb" id="breadcrumb-nav" style="display: none;">
@@ -920,15 +778,15 @@
                 <div class="contact-icon">📞</div>
                 <div class="contact-label">Phone & Mobile</div>
                 <div class="contact-value">
-                    +63 954 545 7518<br>
-                    +63 956 895 5133 
+                    123-456-7890<br>
+                    +123-456-7890
                 </div>
             </div>
             <div class="contact-item">
                 <div class="contact-icon">✉️</div>
                 <div class="contact-label">Email</div>
                 <div class="contact-value">
-                    jarquecarl@gmail.com
+                    hello@example.com
                 </div>
             </div>
             <div class="contact-item">
@@ -939,7 +797,7 @@
                 </div>
                 <div class="contact-label">GitHub</div>
                 <div class="contact-value">
-                    https://github.com/jarquecarl-debug
+                    github.com/yourusername
                 </div>
             </div>
             <div class="contact-item">
@@ -950,7 +808,61 @@
                 </div>
                 <div class="contact-label">Facebook</div>
                 <div class="contact-value">
-                    https://www.facebook.com/carlchristian.jarque.7
+                    facebook.com/yourprofile
                 </div>
             </div>
         </div>
+
+        <div class="contact-footer">
+            CARL CHRISTIAN JARQUE
+        </div>
+    </section>
+
+    <!-- Footer Bar -->
+    <div class="footer-bar">
+        <div class="footer-progress"></div>
+        <div>PORTOFOLIO 2023</div>
+        <div>CARL CHRISTIAN JARQUE</div>
+    </div>
+
+    <script>
+        // GitHub repository configuration
+        const GITHUB_USERNAME = 'YOUR_GITHUB_USERNAME'; // Replace with your GitHub username
+        const REPO_NAME = 'CPE302-Activities';
+        
+        // Hobby images configuration
+        const hobbyImages = {
+            baking: [
+                'git-images/baking/20250412_184913.jpg',
+                'git-images/baking/rn_image_picker_lib_temp_f841ff35-9bc9-49fc-8b93-c8a48ca5c7f5.jpg'
+            ],
+            cosplay: [
+                'git-images/cosplay/20240817_165112.jpg',
+                'git-images/cosplay/20240817_165124.jpg',
+                'git-images/cosplay/20240817_165224.jpg',
+                'git-images/cosplay/20240817_165230.jpg',
+                'git-images/cosplay/20240817_165338.jpg',
+                'git-images/cosplay/20240817_165722.jpg',
+                'git-images/cosplay/20240817_170048.jpg',
+                'git-images/cosplay/20250724_140211.jpg',
+                'git-images/cosplay/20250724_142517.jpg',
+                'git-images/cosplay/20250724_142533.jpg',
+                'git-images/cosplay/20250724_142846.jpg',
+                'git-images/cosplay/20250724_142908.jpg',
+                'git-images/cosplay/20250724_142910.jpg',
+                'git-images/cosplay/20250727_131033.jpg',
+                'git-images/cosplay/IMG_20231022_121856_1.jpg',
+                'git-images/cosplay/IMG20240330162207_01.jpg',
+                'git-images/cosplay/IMG20240330162207_01-1.jpg'
+            ],
+            coffee: [
+                'git-images/coffee/20250928_142040.jpg',
+                'git-images/coffee/IMG_20221225_105839_1.jpg',
+                'git-images/coffee/IMG_20230610_132009_1_HDR.jpg'
+            ],
+            food: [
+                'git-images/food/20240810_115241.jpg',
+                'git-images/food/20250225_193521.jpg',
+                'git-images/food/20250427_125005.jpg',
+                'git-images/food/20250427_125021.jpg',
+                'git-images
