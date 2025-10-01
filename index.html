@@ -16,6 +16,7 @@
             color: #fff;
             background: #0a0a0a;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         .nav-bar {
@@ -62,6 +63,10 @@
             color: #00d9ff;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         .progress-bar {
             width: 200px;
             height: 2px;
@@ -93,7 +98,7 @@
             min-height: 100vh;
             padding: 100px 60px 60px;
             position: relative;
-            display: none;
+            scroll-margin-top: 80px;
         }
 
         .section.active {
@@ -344,11 +349,15 @@
         .hobbies-gallery {
             flex: 1;
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .gallery-container {
             position: relative;
             width: 100%;
+            max-width: 600px;
             height: 500px;
             overflow: hidden;
             border-radius: 10px;
@@ -611,11 +620,11 @@
     <nav class="nav-bar">
         <div class="logo">CARL CHRISTIAN JARQUE</div>
         <div class="nav-links">
-            <button class="nav-link active" onclick="showSection('home')">ONLINE PORTOFOLIO</button>
-            <button class="nav-link" onclick="showSection('about')">ABOUT ME</button>
-            <button class="nav-link" onclick="showSection('hobbies')">HOBBIES</button>
-            <button class="nav-link" onclick="showSection('projects')">PROJECT</button>
-            <button class="nav-link" onclick="showSection('contact')">CONTACT</button>
+            <a href="#home" class="nav-link active">ONLINE PORTOFOLIO</a>
+            <a href="#about" class="nav-link">ABOUT ME</a>
+            <a href="#hobbies" class="nav-link">HOBBIES</a>
+            <a href="#projects" class="nav-link">PROJECT</a>
+            <a href="#contact" class="nav-link">CONTACT</a>
             <div class="progress-bar">
                 <div class="progress-fill"></div>
                 <div class="progress-dot"></div>
@@ -777,15 +786,15 @@
                 <div class="contact-icon">📞</div>
                 <div class="contact-label">Phone & Mobile</div>
                 <div class="contact-value">
-                    +63 954 545 7518<br>
-                    +63 956 895 5133
+                    123-456-7890<br>
+                    +123-456-7890
                 </div>
             </div>
             <div class="contact-item">
                 <div class="contact-icon">✉️</div>
                 <div class="contact-label">Email</div>
                 <div class="contact-value">
-                    jarquecarl@gmail.com
+                    hello@example.com
                 </div>
             </div>
             <div class="contact-item">
@@ -796,7 +805,7 @@
                 </div>
                 <div class="contact-label">GitHub</div>
                 <div class="contact-value">
-                    github.com/jarquecarl-debug
+                    github.com/yourusername
                 </div>
             </div>
             <div class="contact-item">
@@ -807,7 +816,7 @@
                 </div>
                 <div class="contact-label">Facebook</div>
                 <div class="contact-value">
-                    facebook.com/carlchristian.jarque.7
+                    facebook.com/yourprofile
                 </div>
             </div>
         </div>
@@ -826,7 +835,7 @@
 
     <script>
         // GitHub repository configuration
-        const GITHUB_USERNAME = 'jarquecarl-debug'; // Replace with your actual GitHub username
+        const GITHUB_USERNAME = 'YOUR_GITHUB_USERNAME'; // Replace with your actual GitHub username
         const REPO_NAME = 'CPE302-Activities';
         
         // Current state
@@ -897,6 +906,28 @@
                 'git-images/merch/rn_image_picker_lib_temp_1678f4d6-cd82-4d96-afa7-2d3fb36b1972.jpg'
             ]
         };
+
+        // Navigation function
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load projects when projects section is shown
+            if (sectionId === 'projects') {
+                loadGitHubProjects();
+            }
+        }
 
         // Navigation function
         function showSection(sectionId) {
@@ -1038,7 +1069,7 @@
 
                 const pathDisplay = path ? `${path}/` : 'root';
                 successMessage.textContent = `✅ Successfully loaded ${filteredFiles.length} items from ${pathDisplay}`;
-                successMessage.style.display = 'block';
+                successMessage.style.display = 'none';
 
                 projectList.innerHTML = '';
                 
@@ -1222,5 +1253,29 @@
         // Initialize on page load
         window.addEventListener('load', () => {
             initHobbyGallery();
+            loadGitHubProjects();
+            
+            // Handle navigation link active state on scroll
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
         });
     </script>
