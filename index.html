@@ -899,26 +899,27 @@
         };
 
         // Navigation function
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Update active nav link
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Load projects when projects section is shown
-            if (sectionId === 'projects') {
-                loadGitHubProjects();
-            }
-        }
+        function showSection(sectionId, clickedLink) {
+    // Hide all sections
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+
+    // Show selected section
+    document.getElementById(sectionId).classList.add('active');
+
+    // Update active nav link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    clickedLink.classList.add('active');
+
+    // Load projects when projects section is shown
+    if (sectionId === 'projects') {
+        loadGitHubProjects();
+    }
+}
+
 
         // Initialize hobby gallery
         function initHobbyGallery() {
